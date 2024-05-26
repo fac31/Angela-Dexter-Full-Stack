@@ -25,7 +25,7 @@ router.get("/suggestions/:term", async (req, res) => {
                 new URLSearchParams({
                     proximity: "ip",
                     fuzzyMatch: true,
-                    limit: 3,
+                    limit: 5,
                     country: "GB",
                     key: process.env.MAPTILER_API_KEY,
                 })

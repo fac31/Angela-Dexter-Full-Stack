@@ -9,52 +9,64 @@
         <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
         <script src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
         <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
-        <link rel="stylesheet" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+        <link
+            rel="stylesheet"
+            href="https://js.api.here.com/v3/3.1/mapsjs-ui.css"
+        />
+        <script type="module" src="js/main.js" defer></script>
+        <script type="module" src="js/areaSearch.js" defer></script>
+        <script type="module" src="js/crimeDefinitions.js" defer></script>
+        <script type="module" src="js/map.js" defer></script>
         <title>Crime Map</title>
     </head>
-
-
-<body> 
-    <div class="container"> 
-      <header>
-        <div class="title-container">
-          <img src="/img/map-solid.svg" alt="Map Image">
-          <h1>Crime Map</h1> 
-        <div class="filters">
-          <img src="/img/magnifying-glass-solid.svg" alt="Filter Image">
-          <div class="filter">
-            <label for="area">Area</label> 
-            <input type="text" id="area" placeholder="Type an area..">
-            <ul id="areaSuggestions" class="suggestions"></ul>
-          </div> 
-          <div class="filter"> 
-            <label for="monthYear">Month / Year</label> 
-            <input type="month" id="monthYear">
-          </div>
-          <div class="filter"> 
-            <label for="crime">Crime</label> 
-            <select id="crime"> 
-              <option value="">All crimes</option> 
-              <!-- Add crime options here --> 
-            </select> 
-          </div> 
+    <body>
+        <div class="container">
+            <header>
+                <div class="title-container">
+                    <img src="/img/map-solid.svg" alt="Map Image" />
+                    <h1>Crime Map</h1>
+                </div>
+                <div class="filters">
+                    <img
+                        src="/img/magnifying-glass-solid.svg"
+                        alt="Filter Image"
+                    />
+                    <form class="filter area-filter">
+                        <label for="area">Area</label>
+                        <input
+                            type="text"
+                            id="area"
+                            placeholder="Type an area.."
+                        />
+                        <ul id="areaSuggestions" class="suggestions"></ul>
+                    </form>
+                    <form class="filter">
+                        <label for="monthYear">Month / Year</label>
+                        <input type="month" id="monthYear" />
+                    </form>
+                    <form class="filter">
+                        <label for="crime">Crime</label>
+                        <select id="crime">
+                            <option value="">All crimes</option>
+                            <!-- Add crime options here -->
+                        </select>
+                    </form>
+                </div>
+            </header>
+            <main>
+                <div class="stats">
+                    <p>118 crimes were reported here in March 2024</p>
+                    <ul>
+                        <li>Shoplifting: 18</li>
+                        <li>Anti-social behaviour: 14</li>
+                        <li>All other crime: 37</li>
+                    </ul>
+                    <button id="viewDefinitions">View crime definitions</button>
+                </div>
+                <div class="map" id="map">
+                    <!-- Map will be embedded here -->
+                </div>
+            </main>
         </div>
-      </header> 
-        <main> 
-          <div class="stats"> 
-            <p>118 crimes were reported here in March 2024</p> 
-            <ul> 
-              <li>Shoplifting: 18</li> 
-              <li>Anti-social behaviour: 14</li> 
-              <li>All other crime: 37</li> 
-            </ul> 
-            <button id="viewDefinitions">View crime definitions</button> 
-          </div> 
-          <div class="map" id="map">
-            <!-- Map will be embedded here --> 
-          </div> 
-        </main> 
-      </div> 
-      <script type="module" src="js/main.js"></script> 
-</body> 
+    </body>
 </html>
