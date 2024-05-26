@@ -202,4 +202,8 @@ main {
     .filter {
         width: 100%;
     }
+
+    #area {
+        width: 100%;
+    }
 }
