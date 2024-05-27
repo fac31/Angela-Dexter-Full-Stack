@@ -111,6 +111,11 @@ main {
     color: white;
 }
 
+/* Add this style for dynamically updated span elements */
+.stats ul li span {
+    font-weight: bold;
+}
+
 #viewDefinitions {
     padding: 10px 20px;
     border: none;

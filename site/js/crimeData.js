@@ -1,17 +1,26 @@
 import { addMarkerToMap } from "./map.js";
+// import { updateCrimeStats } from "./main.js";
 
-function fetchPoliceCrimeData(latitude, longitude) {
-    const date = Date.now();
-    const dateString = date.toISOString().substring(0, 10);
+function fetchPoliceCrimeData(latitude, longitude, date, crimeType) {
 
-    const url = `https://data.police.uk/api/crimes-street/all-crime?lat=${latitude}&lng=${longitude}&date=${dateString}`;
+    let url = `https://data.police.uk/api/crimes-street/all-crime?lat=${latitude}&lng=${longitude}&date=${monthYear}`;
 
-    return fetch(url).then((response) => {
-        if (!response.ok) {
-            throw new Error("Network response was not ok");
-        }
-        return response.json();
-    });
+    // Append crime type filter if specified
+    if (crimeType) {
+        url += `&category=${crimeType}`;
+    }
+
+      // Log the constructed URL for debugging
+    console.log("Request URL:", url);
+
+    // Fetch crime data and return a promise
+    return fetch(url)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.json();
+        });
 }
 
 // Function to process and display crime data on the map
@@ -27,20 +36,37 @@ function processCrimeData(data) {
 }
 
 // Combined function to fetch and process crime data from both APIs
-async function fetchAndProcessCrimeData() {
+async function fetchAndProcessCrimeData(latitude, longitude, monthYear) {
+    // try {
+        
+    //     // const [hereCrimeData, policeCrimeData] = await Promise.all([
+    //     //     fetchHereCrimeData(hereApiKey, latitude, longitude, radius),
+    //     //     fetchPoliceCrimeData(latitude, longitude, date),
+    //     // ]);
     try {
-        const [hereCrimeData, policeCrimeData] = await Promise.all([
-            // fetchHereCrimeData(hereApiKey, latitude, longitude, radius), // Pass hereApiKey, latitude, longitude, and radius
-            fetchPoliceCrimeData(latitude, longitude, date),
-        ]);
+        const area = document.getElementById("area").value;
+        // const monthYear = document.getElementById("monthYear").value;
+        const crimeType = document.getElementById("crime").value;
 
-        // Process the responses and update the map accordingly
-        processCrimeData(hereCrimeData.incidents);
-        processCrimeData(policeCrimeData);
+        // Extract year and month from monthYear input
+        const [year, month] = monthYear.split('-');
+
+        const dateString = `${year}-${month}`;
+
+        const policeCrimeData = await fetchPoliceCrimeData(latitude, longitude, dateString, crimeType);
+
+        // // Update the crime stats section with the fetched data
+        // updateCrimeStats(policeCrimeData);
+
     } catch (error) {
         console.error("Error fetching crime data:", error);
     }
 }
 
+// Define latitude and longitude variables with appropriate values
+const latitude = 52.629831; // Example latitude
+const longitude =-1.132503; // Example longitude
+const monthYear = '2023-02'; // Example monthYear
+
 // Fetch and process crime data from both APIs
-fetchAndProcessCrimeData();
+fetchAndProcessCrimeData(latitude,longitude,monthYear);
