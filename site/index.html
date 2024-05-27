@@ -17,6 +17,7 @@
         <script type="module" src="js/areaSearch.js" defer></script>
         <script type="module" src="js/crimeDefinitions.js" defer></script>
         <script type="module" src="js/map.js" defer></script>
+        <script type="module" src="js/crimeData.js" defer></script>
         <title>Crime Map</title>
     </head>
     <body>
@@ -48,18 +49,31 @@
                         <label for="crime">Crime</label>
                         <select id="crime">
                             <option value="">All crimes</option>
-                            <!-- Add crime options here -->
+                            <option value="anti-social-behaviour">Anti-social behaviour</option>
+                            <option value="bicycle-theft">Bicycle theft</option>
+                            <option value="burglary">Burglary</option>
+                            <option value="criminal-damage-arson">Criminal damage and arson</option>
+                            <option value="drugs">Drugs</option>
+                            <option value="other-theft">Other theft</option>
+                            <option value="possession-of-weapons">Possesion of weapons</option>
+                            <option value="public-order">Public order</option>
+                            <option value="robbery">Robbery</option>
+                            <option value="shoplifting">Shoplifting</option>
+                            <option value="vehicle-crime">Vehicle crime</option>
+                            <option value="violent-crime">Violent crime</option>
+                            <option value="other-crime">Other crime</option>
                         </select>
                     </form>
                 </div>
             </header>
             <main>
                 <div class="stats">
-                    <p>118 crimes were reported here in March 2024</p>
-                    <ul>
-                        <li>Shoplifting: 18</li>
-                        <li>Anti-social behaviour: 14</li>
-                        <li>All other crime: 37</li>
+                    <p id="crimeStats">Loading crime data...</p>
+                    <ul id="crimeList">
+                        <li>Shoplifting: <span id="shopliftingCount">Loading...</span></li>
+                        <li>Anti-social behaviour: <span id="antiSocialBehaviourCount">Loading...</span></li>
+                        <!-- Add placeholders for other crime categories -->
+                        <li>All other crime: <span id="otherCrimeCount">Loading...</span></li>
                     </ul>
                     <button id="viewDefinitions">View crime definitions</button>
                 </div>
