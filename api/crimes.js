@@ -2,7 +2,7 @@ import express from "express";
 
 const router = express.Router();
 
-const CRIME_DATA_URL = "https://data.police.uk/api/";
+const CRIME_DATA_URL = "https://data.police.uk/api";
 
 const formatPoly = (poly) => {
     return poly.map((pair) => `${pair.lat},${pair.lng}`).join(":");
@@ -18,7 +18,11 @@ router.get("/last-updated", async (req, res) => {
         const year = parseInt(lastUpdated.date.substring(0, 4));
         const month = parseInt(lastUpdated.date.substring(6, 7));
 
-        res.status(200).json({ dateString: `${year}-${month}`, year, month });
+        res.status(200).json({
+            dateString: `${year}-${month >= 10 ? "" : "0"}${month}`,
+            year,
+            month,
+        });
     } catch (e) {
         console.log(`Failed to get crime last-updated: ${e}\n${e.stack}`);
 
@@ -44,13 +48,14 @@ router.get("/last-updated", async (req, res) => {
 });
 
 router.post("/location", async (req, res) => {
+    // console.log(req.body);
     // console.log(
-    //     `${CRIME_DATA_URL}/${req.body.crime_type}?` +
+    //     `${CRIME_DATA_URL}/crimes-street/${req.body.crime_type}?` +
     //         new URLSearchParams({
     //             //poly: formatPoly(req.body.polygon),
     //             date: req.body.date,
-    //             lat: 51.5286417,
-    //             lng: -0.1057185,
+    //             lat: req.body.lat,
+    //             lng: req.body.lng,
     //         })
     // );
     try {
@@ -59,8 +64,8 @@ router.post("/location", async (req, res) => {
                 new URLSearchParams({
                     //poly: formatPoly(req.body.polygon),
                     date: req.body.date,
-                    lat: 51.5286417,
-                    lng: -0.1057185,
+                    lat: req.body.lat,
+                    lng: req.body.lng,
                 })
         );
 

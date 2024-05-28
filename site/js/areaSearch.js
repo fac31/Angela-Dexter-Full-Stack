@@ -1,4 +1,5 @@
-import { map, addMarkerToMap } from "./map.js";
+import { map } from "./map.js";
+import { displayMarkersInLocation } from "./crimeData.js";
 
 const areaInput = document.getElementById("area");
 const areaSuggestions = document.getElementById("areaSuggestions");
@@ -66,13 +67,10 @@ function fetchLocationSuggestions(input) {
                     // Center the map on the selected location
                     map.setCenter(selectedLocation);
 
-                    // Optionally, clear existing markers and add a marker for the selected location
-                    map.removeObjects(map.getObjects());
-                    addMarkerToMap(
-                        map,
-                        selectedLocation.lat,
-                        selectedLocation.lng,
-                        placeName
+                    displayMarkersInLocation(
+                        place.place.id,
+                        place.center.lat,
+                        place.center.lng
                     );
 
                     // Update the input field with the selected suggestion

@@ -1,19 +1,21 @@
-import { addMarkerToMap } from "./map.js";
+import { addMarkerToMap, map } from "./map.js";
+import { currentDateString } from "./dateFilter.js";
 // import { updateCrimeStats } from "./main.js";
 
-function fetchPoliceCrimeData(latitude, longitude, date, crimeType) {
-    let url = `https://data.police.uk/api/crimes-street/all-crime?lat=${latitude}&lng=${longitude}&date=${monthYear}`;
-
-    // Append crime type filter if specified
-    if (crimeType) {
-        url += `&category=${crimeType}`;
-    }
-
-    // Log the constructed URL for debugging
-    console.log("Request URL:", url);
-
+function fetchPoliceCrimeData(latitude, longitude, crimeType) {
     // Fetch crime data and return a promise
-    return fetch(url).then((response) => {
+    return fetch("/api/crime/location", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            crime_type: crimeType,
+            lat: latitude,
+            lng: longitude,
+            date: currentDateString,
+        }),
+    }).then((response) => {
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }
@@ -21,14 +23,25 @@ function fetchPoliceCrimeData(latitude, longitude, date, crimeType) {
     });
 }
 
+export async function displayMarkersInLocation(place_id, lat, lng) {
+    // const polyResp = fetch("/api/poly", { method: "POST" });
+
+    const crimeType = document.getElementById("crime").value;
+
+    const data = await fetchPoliceCrimeData(lat, lng, crimeType);
+
+    processCrimeData(data);
+}
+
 // Function to process and display crime data on the map
 function processCrimeData(data) {
-    data.forEach((crime) => {
+    map.removeObjects(map.getObjects());
+
+    data.forEach((crime, i) => {
         addMarkerToMap(
-            map,
-            crime.lat,
-            crime.lng,
-            `${crime.type}: ${crime.count}`
+            crime.location.latitude,
+            crime.location.longitude,
+            crime.id
         );
     });
 }
@@ -71,4 +84,4 @@ const longitude = -1.132503; // Example longitude
 const monthYear = "2023-02"; // Example monthYear
 
 // Fetch and process crime data from both APIs
-fetchAndProcessCrimeData(latitude, longitude, monthYear);
+// fetchAndProcessCrimeData(latitude, longitude, monthYear);
