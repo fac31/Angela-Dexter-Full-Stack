@@ -119,14 +119,14 @@ main {
 #viewDefinitions {
     padding: 10px 20px;
     border: none;
-    background-color: #76ABAE;
+    background-color: #76abae;
     color: black;
     cursor: pointer;
     border-radius: 4px;
 }
 
 #viewDefinitions:hover {
-    background-color: #EEEEEE;
+    background-color: #eeeeee;
 }
 
 .map {
@@ -169,6 +169,7 @@ main {
     overflow: hidden;
     margin-top: 5px;
     border-radius: 10px;
+    visibility: hidden;
 }
 
 .suggestions-item {
@@ -229,10 +230,7 @@ main {
     background: #555; /* Color of the scrollbar thumb when hovered */
 }
 
-
 @media (max-width: 768px) {
-
-
     .container {
         flex-direction: column;
     }
@@ -261,7 +259,6 @@ main {
 
     #area {
         width: 100%;
-    
     }
     .popup {
         width: 95%;

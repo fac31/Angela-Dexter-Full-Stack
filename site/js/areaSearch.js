@@ -20,13 +20,20 @@ function fetchLocationSuggestions(input) {
             return response.json();
         })
         .then((places) => {
-            console.log(places);
-
             clearSuggestions();
             areaSuggestions.style.visibility = "visible";
 
+            if (places.length === 0) {
+                areaSuggestions.appendChild(
+                    document.createTextNode(
+                        "No places could be found. Try a different search term."
+                    )
+                );
+                return;
+            }
+
             places.forEach((place) => {
-                const placeName = place.place_name;
+                const placeName = place.place.name;
 
                 const li = document.createElement("li");
                 li.classList.add("suggestions-item");
@@ -36,8 +43,8 @@ function fetchLocationSuggestions(input) {
                 // Add click event to fill input with selected suggestion
                 li.addEventListener("click", () => {
                     const selectedLocation = {
-                        lng: place.center_coords[0],
-                        lat: place.center_coords[1],
+                        lat: place.center.lat,
+                        lng: place.center.lng,
                     };
 
                     // Center the map on the selected location
