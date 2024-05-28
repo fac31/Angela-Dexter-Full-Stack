@@ -30,20 +30,35 @@ export async function displayMarkersInLocation(place_id, lat, lng) {
 
     const data = await fetchPoliceCrimeData(lat, lng, crimeType);
 
-    processCrimeData(data);
+    clusterCrimeData(data);
 }
 
-// Function to process and display crime data on the map
-function processCrimeData(data) {
-    map.removeObjects(map.getObjects());
+let clusterLayerRef = null;
 
-    data.forEach((crime, i) => {
-        addMarkerToMap(
+// Function to process and display crime data on the map
+function clusterCrimeData(data) {
+    if (clusterLayerRef) map.removeLayer(clusterLayerRef);
+
+    let dataPoints = data.map(function (crime) {
+        return new H.clustering.DataPoint(
             crime.location.latitude,
-            crime.location.longitude,
-            crime.id
+            crime.location.longitude
         );
     });
+
+    let clusteredDataProvider = new H.clustering.Provider(dataPoints, {
+        clusteringOptions: {
+            // maximum radius of the neighbourhood
+            eps: 10,
+            // minimum weight of points required to form a cluster
+            minWeight: 2,
+        },
+    });
+
+    let clusteringLayer = new H.map.layer.ObjectLayer(clusteredDataProvider);
+    clusterLayerRef = clusteringLayer;
+
+    map.addLayer(clusteringLayer);
 }
 
 // Combined function to fetch and process crime data from both APIs
