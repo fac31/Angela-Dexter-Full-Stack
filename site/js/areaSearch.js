@@ -3,35 +3,51 @@ import { map, addMarkerToMap } from "./map.js";
 const areaInput = document.getElementById("area");
 const areaSuggestions = document.getElementById("areaSuggestions");
 
-function clearSuggestions() {
+function clearSuggestions(reset = false) {
     areaSuggestions.style.visibility = "hidden";
     areaSuggestions.replaceChildren();
+
+    if (reset) {
+        areaSuggestions.style.visibility = "visible";
+    }
+}
+
+function suggestionStatus(status) {
+    clearSuggestions(true);
+
+    areaSuggestions.appendChild(document.createTextNode(status));
 }
 
 // Function to fetch location suggestions based on input
 function fetchLocationSuggestions(input) {
     const url = `/api/suggestions/${input}`;
 
+    suggestionStatus("Searching...");
+
     fetch(url)
         .then((response) => {
             if (!response.ok) {
-                throw new Error("Network response was not ok");
+                console.error(
+                    "Error fetching location suggestions",
+                    response.status
+                );
+                suggestionStatus(
+                    "An error occured and no locations could be found."
+                );
+                return;
+            } else {
+                return response.json();
             }
-            return response.json();
         })
         .then((places) => {
-            clearSuggestions();
-            areaSuggestions.style.visibility = "visible";
-
             if (places.length === 0) {
-                areaSuggestions.appendChild(
-                    document.createTextNode(
-                        "No places could be found. Try a different search term."
-                    )
+                suggestionStatus(
+                    "No places could be found. Try a different search term."
                 );
                 return;
             }
 
+            clearSuggestions(true);
             places.forEach((place) => {
                 const placeName = place.place.name;
 
@@ -67,14 +83,19 @@ function fetchLocationSuggestions(input) {
                 });
             });
         })
-        .catch((error) =>
-            console.error("Error fetching location suggestions:", error)
-        );
+        .catch((error) => {
+            console.error("Error fetching location suggestions:", error);
+            suggestionStatus(
+                "An error occured and no locations could be found."
+            );
+        });
 }
 
 // Event listener for area input changes
 areaInput.addEventListener("input", function () {
-    const input = this.value.trim();
+    // replace any characters that are not allowed
+    const input = this.value.replace(/[^-_a-zA-Z0-9]/, "");
+
     if (input.length >= 2) {
         // Fetch suggestions only if input length is greater than 2
         fetchLocationSuggestions(input);
@@ -86,7 +107,8 @@ areaInput.addEventListener("input", function () {
 // if the user clicks back onto the input after clicking away
 // search for the place if there is one there
 areaInput.addEventListener("focus", function () {
-    const input = this.value.trim();
+    const input = this.value.replace(/[^-_a-zA-Z0-9]/, "");
+
     if (input.length >= 2) {
         // Fetch suggestions only if input length is greater than 2
         fetchLocationSuggestions(input);

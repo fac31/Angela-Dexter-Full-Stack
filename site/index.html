@@ -18,6 +18,7 @@
         <script type="module" src="js/crimeDefinitions.js" defer></script>
         <script type="module" src="js/map.js" defer></script>
         <script type="module" src="js/crimeData.js" defer></script>
+        <script type="module" src="js/dateFilter.js" defer></script>
         <title>Crime Map</title>
     </head>
     <body>
@@ -41,21 +42,33 @@
                         />
                         <ul id="areaSuggestions" class="suggestions"></ul>
                     </form>
-                    <form class="filter">
-                        <label for="monthYear">Month / Year</label>
-                        <input type="month" id="monthYear" />
+                    <form class="filter month-year">
+                        <div class="year">
+                            <label for="year">Year</label>
+                            <select id="year"></select>
+                        </div>
+                        <div class="month">
+                            <label for="month">Month</label>
+                            <select id="month"></select>
+                        </div>
                     </form>
                     <form class="filter">
                         <label for="crime">Crime</label>
                         <select id="crime">
                             <option value="">All crimes</option>
-                            <option value="anti-social-behaviour">Anti-social behaviour</option>
+                            <option value="anti-social-behaviour">
+                                Anti-social behaviour
+                            </option>
                             <option value="bicycle-theft">Bicycle theft</option>
                             <option value="burglary">Burglary</option>
-                            <option value="criminal-damage-arson">Criminal damage and arson</option>
+                            <option value="criminal-damage-arson">
+                                Criminal damage and arson
+                            </option>
                             <option value="drugs">Drugs</option>
                             <option value="other-theft">Other theft</option>
-                            <option value="possession-of-weapons">Possesion of weapons</option>
+                            <option value="possession-of-weapons">
+                                Possesion of weapons
+                            </option>
                             <option value="public-order">Public order</option>
                             <option value="robbery">Robbery</option>
                             <option value="shoplifting">Shoplifting</option>
@@ -70,10 +83,21 @@
                 <div class="stats">
                     <p id="crimeStats">Loading crime data...</p>
                     <ul id="crimeList">
-                        <li>Shoplifting: <span id="shopliftingCount">Loading...</span></li>
-                        <li>Anti-social behaviour: <span id="antiSocialBehaviourCount">Loading...</span></li>
+                        <li>
+                            Shoplifting:
+                            <span id="shopliftingCount">Loading...</span>
+                        </li>
+                        <li>
+                            Anti-social behaviour:
+                            <span id="antiSocialBehaviourCount"
+                                >Loading...</span
+                            >
+                        </li>
                         <!-- Add placeholders for other crime categories -->
-                        <li>All other crime: <span id="otherCrimeCount">Loading...</span></li>
+                        <li>
+                            All other crime:
+                            <span id="otherCrimeCount">Loading...</span>
+                        </li>
                     </ul>
                     <button id="viewDefinitions">View crime definitions</button>
                 </div>

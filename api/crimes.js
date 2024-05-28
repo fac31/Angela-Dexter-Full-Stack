@@ -15,7 +15,10 @@ router.get("/last-updated", async (req, res) => {
         );
         const lastUpdated = await lastUpdatedRes.json();
 
-        res.status(200).json({ date: lastUpdated.date.substring(0, 7) });
+        const year = parseInt(lastUpdated.date.substring(0, 4));
+        const month = parseInt(lastUpdated.date.substring(6, 7));
+
+        res.status(200).json({ dateString: `${year}-${month}`, year, month });
     } catch (e) {
         console.log(`Failed to get crime last-updated: ${e}\n${e.stack}`);
 
@@ -33,7 +36,9 @@ router.get("/last-updated", async (req, res) => {
         }
 
         res.status(200).json({
-            date: `${year}-${month >= 10 ? "" : "0"}${month}`,
+            dateString: `${year}-${month >= 10 ? "" : "0"}${month}`,
+            month,
+            year,
         });
     }
 });
