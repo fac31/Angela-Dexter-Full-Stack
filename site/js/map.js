@@ -3,6 +3,12 @@ const mapElem = document.getElementById("map");
 const latitude = 51.5074; // Coordinates for London
 const longitude = -0.1278;
 
+// lat/lng of the area the user searched
+export let currentCrimeLocation = {
+    lat: null,
+    lng: null,
+};
+
 // Initialize HERE Map
 const platform = new H.service.Platform({
     apikey: window.HERE_API_KEY,
@@ -25,4 +31,12 @@ export function addMarkerToMap(lat, lng, data) {
     const marker = new H.map.Marker({ lat, lng });
     marker.setData(data);
     map.addObject(marker);
+}
+
+export function setCrimeLocation(lat, lng) {
+    currentCrimeLocation = { lat, lng };
+}
+
+export function centerOnCrimeLocation() {
+    map.setCenter(currentCrimeLocation);
 }

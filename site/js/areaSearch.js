@@ -1,5 +1,5 @@
-import { map } from "./map.js";
-import { displayMarkersInLocation } from "./crimeData.js";
+import { centerOnCrimeLocation, map, setCrimeLocation } from "./map.js";
+import { createMarkerCluster } from "./crimeData.js";
 
 const areaInput = document.getElementById("area");
 const areaSuggestions = document.getElementById("areaSuggestions");
@@ -59,19 +59,10 @@ function fetchLocationSuggestions(input) {
 
                 // Add click event to fill input with selected suggestion
                 li.addEventListener("click", () => {
-                    const selectedLocation = {
-                        lat: place.center.lat,
-                        lng: place.center.lng,
-                    };
+                    setCrimeLocation(place.center.lat, place.center.lng);
+                    centerOnCrimeLocation();
 
-                    // Center the map on the selected location
-                    map.setCenter(selectedLocation);
-
-                    displayMarkersInLocation(
-                        place.place.id,
-                        place.center.lat,
-                        place.center.lng
-                    );
+                    createMarkerCluster();
 
                     // Update the input field with the selected suggestion
                     areaInput.value = placeName;
