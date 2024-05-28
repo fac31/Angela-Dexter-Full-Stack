@@ -1,32 +1,56 @@
-import { map, addMarkerToMap } from "./map.js";
+import { map } from "./map.js";
+import { displayMarkersInLocation } from "./crimeData.js";
 
 const areaInput = document.getElementById("area");
 const areaSuggestions = document.getElementById("areaSuggestions");
 
-function clearSuggestions() {
+function clearSuggestions(reset = false) {
     areaSuggestions.style.visibility = "hidden";
     areaSuggestions.replaceChildren();
+
+    if (reset) {
+        areaSuggestions.style.visibility = "visible";
+    }
+}
+
+function suggestionStatus(status) {
+    clearSuggestions(true);
+
+    areaSuggestions.appendChild(document.createTextNode(status));
 }
 
 // Function to fetch location suggestions based on input
 function fetchLocationSuggestions(input) {
     const url = `/api/suggestions/${input}`;
 
+    suggestionStatus("Searching...");
+
     fetch(url)
         .then((response) => {
             if (!response.ok) {
-                throw new Error("Network response was not ok");
+                console.error(
+                    "Error fetching location suggestions",
+                    response.status
+                );
+                suggestionStatus(
+                    "An error occured and no locations could be found."
+                );
+                return;
+            } else {
+                return response.json();
             }
-            return response.json();
         })
         .then((places) => {
-            console.log(places);
+            if (places.length === 0) {
+                suggestionStatus(
+                    "No places could be found. Try a different search term."
+                );
+                return;
+            }
 
-            clearSuggestions();
-            areaSuggestions.style.visibility = "visible";
-
+            clearSuggestions(true);
             places.forEach((place) => {
-                const placeName = place.place_name;
+                const placeName = place.place.name;
 
                 const li = document.createElement("li");
                 li.classList.add("suggestions-item");
@@ -36,20 +60,17 @@ function fetchLocationSuggestions(input) {
                 // Add click event to fill input with selected suggestion
                 li.addEventListener("click", () => {
                     const selectedLocation = {
-                        lng: place.center_coords[0],
-                        lat: place.center_coords[1],
+                        lat: place.center.lat,
+                        lng: place.center.lng,
                     };
 
                     // Center the map on the selected location
                     map.setCenter(selectedLocation);
 
-                    // Optionally, clear existing markers and add a marker for the selected location
-                    map.removeObjects(map.getObjects());
-                    addMarkerToMap(
-                        map,
-                        selectedLocation.lat,
-                        selectedLocation.lng,
-                        placeName
+                    displayMarkersInLocation(
+                        place.place.id,
+                        place.center.lat,
+                        place.center.lng
                     );
 
                     // Update the input field with the selected suggestion
@@ -60,14 +81,19 @@ function fetchLocationSuggestions(input) {
                 });
             });
         })
-        .catch((error) =>
-            console.error("Error fetching location suggestions:", error)
-        );
+        .catch((error) => {
+            console.error("Error fetching location suggestions:", error);
+            suggestionStatus(
+                "An error occured and no locations could be found."
+            );
+        });
 }
 
 // Event listener for area input changes
 areaInput.addEventListener("input", function () {
-    const input = this.value.trim();
+    // replace any characters that are not allowed
+    const input = this.value.replace(/[^-_a-zA-Z0-9]/, "");
+
     if (input.length >= 2) {
         // Fetch suggestions only if input length is greater than 2
         fetchLocationSuggestions(input);
@@ -79,7 +105,8 @@ areaInput.addEventListener("input", function () {
 // if the user clicks back onto the input after clicking away
 // search for the place if there is one there
 areaInput.addEventListener("focus", function () {
-    const input = this.value.trim();
+    const input = this.value.replace(/[^-_a-zA-Z0-9]/, "");
+
     if (input.length >= 2) {
         // Fetch suggestions only if input length is greater than 2
         fetchLocationSuggestions(input);

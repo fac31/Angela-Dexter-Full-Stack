@@ -9,8 +9,14 @@ const extractSuggestions = (suggestions) => {
 
     return features.reduce((newFeatures, feature) => {
         newFeatures.push({
-            place_name: feature.place_name,
-            center_coords: feature.center,
+            place: {
+                name: feature.place_name,
+                id: feature.id,
+            },
+            center: {
+                lng: feature.center[0],
+                lat: feature.center[1],
+            },
         });
 
         return newFeatures;
@@ -36,7 +42,8 @@ router.get("/suggestions/:term", async (req, res) => {
         res.status(200).json(extractSuggestions(suggestions));
     } catch (e) {
         console.log(`Failed to get suggestions: ${e}`);
-        // TODO
+
+        res.status(403);
     }
 });
 

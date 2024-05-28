@@ -21,7 +21,7 @@ const behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
 const ui = H.ui.UI.createDefault(map, defaultLayers);
 
 // Function to add a marker to the map
-export function addMarkerToMap(map, lat, lng, data) {
+export function addMarkerToMap(lat, lng, data) {
     const marker = new H.map.Marker({ lat, lng });
     marker.setData(data);
     map.addObject(marker);
