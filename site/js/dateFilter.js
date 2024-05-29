@@ -1,10 +1,15 @@
-const oldestYear = 2017;
+import { createMarkerCluster } from "./crimeData.js";
+
+const oldestYear = 2021;
 const currentYear = new Date().getFullYear();
 
 let lastUpdatedMonth = new Date().getMonth();
 
 const yearInput = document.getElementById("year");
 const monthInput = document.getElementById("month");
+
+let selectedYear = null;
+let selectedMonth = null;
 
 export let currentDateString = "";
 
@@ -34,12 +39,23 @@ updateMonthOptions(12);
 
 yearInput.addEventListener("change", (e) => {
     const year = parseInt(e.target.value);
+    selectedYear = e.target.value;
 
     if (year === currentYear) {
         updateMonthOptions(lastUpdatedMonth);
     } else {
         updateMonthOptions(12);
     }
+
+    currentDateString = `${selectedYear}-${selectedMonth}`;
+
+    createMarkerCluster();
+});
+
+monthInput.addEventListener("change", (e) => {
+    selectedMonth = e.target.value;
+
+    createMarkerCluster();
 });
 
 fetch("/api/crime/last-updated")
@@ -49,6 +65,10 @@ fetch("/api/crime/last-updated")
     })
     .then((date) => {
         lastUpdatedMonth = date.month;
+
+        selectedMonth = date.month;
+        selectedYear = date.year;
+
         updateMonthOptions(date.month);
 
         const yearOption = document.querySelector(
