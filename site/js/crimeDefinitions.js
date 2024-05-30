@@ -39,4 +39,17 @@ export function showCrimeDefinitions() {
 
     // Append the popup container to the body
     document.body.appendChild(popupContainer); 
+
+    // Function to handle outside click
+    function handleOutsideClick(event) {
+        if (!popupContent.contains(event.target)) {
+            popupContainer.remove();
+            document.removeEventListener('click', handleOutsideClick);
+        }
+    }
+
+    // Add event listener for clicks outside the popup content
+    setTimeout(() => {
+        document.addEventListener('click', handleOutsideClick);
+    }, 0);
 }
