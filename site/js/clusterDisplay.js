@@ -1,5 +1,49 @@
 import { addLayer, removeLayer } from "./map.js";
 
+function crimeToIcon(crimeType) {
+    switch (crimeType) {
+        case "all-crime":
+            return "img/crime-other.svg";
+
+        case "anti-social-behaviour":
+        case "public-order":
+            return "img/crime-asb.svg";
+
+        case "burglary":
+            return "img/crime-burglary.svg";
+        case "criminal-damage-arson":
+            return "img/crime-criminal-damage.svg";
+        case "drugs":
+            return "img/crime-drugs.svg";
+        case "bicycle-theft":
+            return "img/crime-bike.svg";
+
+        case "other-theft":
+        case "shoplifting":
+            return "img/crime-theft.svg";
+
+        case "robbery":
+            return "img/crime-robbery.svg";
+
+        case "vehicle-crime":
+            return "img/crime-vehicle.svg";
+
+        case "violent-crime":
+        case "possession-of-weapons":
+            return "img/crime-violence.svg";
+
+        default:
+            return "img/crime-other.svg";
+    }
+}
+
+function crimeToMapsIcon(crimeType) {
+    return new H.map.Icon(crimeToIcon(crimeType), {
+        size: { w: 35, h: 35 },
+        anchor: { x: 25, y: 25 },
+    });
+}
+
 let clusterLayerRef = null;
 
 // Function to process and display crime data on the map
@@ -15,8 +59,6 @@ export function clusterCrimeData(data) {
         );
     });
 
-    console.log("1");
-
     let clusteredDataProvider = new H.clustering.Provider(dataPoints, {
         clusteringOptions: {
             // maximum radius of the neighbourhood
@@ -27,12 +69,8 @@ export function clusterCrimeData(data) {
         theme: CLUSTER_THEME,
     });
 
-    console.log("2");
-
     let clusteringLayer = new H.map.layer.ObjectLayer(clusteredDataProvider);
     clusterLayerRef = clusteringLayer;
-
-    console.log(clusteringLayer);
 
     addLayer(clusteringLayer);
 }
@@ -45,17 +83,9 @@ const CLUSTER_THEME = {
             // Get a reference to data object that DataPoint holds
             data = randomDataPoint.getData();
 
-        console.log(data);
-
         // Create a marker from a random point in the cluster
         let clusterMarker = new H.map.Marker(cluster.getPosition(), {
-            icon: new H.map.Icon(
-                "//upload.wikimedia.org/wikipedia/commons/thumb/3/3b/11-09-fotofluege-cux-allg-25a.jpg/120px-11-09-fotofluege-cux-allg-25a.jpg",
-                {
-                    size: { w: 50, h: 50 },
-                    anchor: { x: 25, y: 25 },
-                }
-            ),
+            icon: crimeToMapsIcon(data.category),
 
             // Set min/max zoom with values from the cluster,
             // otherwise clusters will be shown at all zoom levels:
@@ -74,13 +104,10 @@ const CLUSTER_THEME = {
         let data = noisePoint.getData(),
             // Create a marker for the noisePoint
             noiseMarker = new H.map.Marker(noisePoint.getPosition(), {
+                icon: crimeToMapsIcon(data.category),
                 // Use min zoom from a noise point
                 // to show it correctly at certain zoom levels:
                 min: noisePoint.getMinZoom(),
-                icon: new H.map.Icon(data.thumbnail, {
-                    size: { w: 20, h: 20 },
-                    anchor: { x: 10, y: 10 },
-                }),
             });
 
         // Link a data from the point to the marker
