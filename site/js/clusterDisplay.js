@@ -1,10 +1,7 @@
 import { addLayer, removeLayer } from "./map.js";
 
-function crimeToIcon(crimeType) {
+function crimeTypeToIcon(crimeType) {
     switch (crimeType) {
-        case "all-crime":
-            return "img/crime-other.svg";
-
         case "anti-social-behaviour":
         case "public-order":
             return "img/crime-asb.svg";
@@ -37,11 +34,83 @@ function crimeToIcon(crimeType) {
     }
 }
 
-function crimeToMapsIcon(crimeType) {
-    return new H.map.Icon(crimeToIcon(crimeType), {
-        size: { w: 35, h: 35 },
-        anchor: { x: 25, y: 25 },
-    });
+function formatCrimeType(crimeType) {
+    switch (crimeType) {
+        case "anti-social-behaviour":
+            return "Anti-Social Behaviour";
+        case "public-order":
+            return "Public Order";
+
+        case "burglary":
+            return "Burglary";
+        case "criminal-damage-arson":
+            return "Criminal Damage";
+        case "drugs":
+            return "Drugs";
+        case "bicycle-theft":
+            return "Bicycle Theft";
+
+        case "other-theft":
+            return "Theft (other)";
+        case "shoplifting":
+            return "Theft (shoplifting)";
+
+        case "robbery":
+            return "Robbery";
+
+        case "vehicle-crime":
+            return "Vehicle Crime";
+
+        case "violent-crime":
+            return "Violent Crime";
+        case "possession-of-weapons":
+            return "Violent Crime (possesion of weapons)";
+
+        default:
+            return "Other Crime";
+    }
+}
+
+function markerDomElement(crimeData) {
+    const outerDiv = document.createElement("div");
+    const icon = document.createElement("img");
+
+    outerDiv.style = `
+background: black;
+border-radius: 15px;
+width: 40px;
+height: 40px;
+padding: 5px;
+display: flex;
+justify-content: center;
+align-items: center;
+object-fit: contain;
+cursor: pointer;
+user-select: none;
+opacity: 80%;
+    `;
+
+    icon.style = `width: 100%; height: 100%; aspect-ratio: 1/1`;
+    icon.src = crimeTypeToIcon(crimeData.category);
+    icon.alt = formatCrimeType(crimeData.category);
+    icon.draggable = false;
+
+    outerDiv.title = formatCrimeType(crimeData.category);
+
+    outerDiv.appendChild(icon);
+
+    return outerDiv;
+}
+
+function crimeToMapsMarker(point, crimeData, isCluster = false) {
+    const markerData = {
+        icon: new H.map.DomIcon(markerDomElement(crimeData)),
+        min: point.getMinZoom(),
+    };
+
+    if (isCluster) markerData.max = point.getMaxZoom();
+
+    return new H.map.DomMarker(point.getPosition(), markerData);
 }
 
 let clusterLayerRef = null;
@@ -49,6 +118,8 @@ let clusterLayerRef = null;
 // Function to process and display crime data on the map
 export function clusterCrimeData(data) {
     if (clusterLayerRef) removeLayer(clusterLayerRef);
+
+    console.log(data.length);
 
     let dataPoints = data.map(function (crime) {
         return new H.clustering.DataPoint(
@@ -84,14 +155,7 @@ const CLUSTER_THEME = {
             data = randomDataPoint.getData();
 
         // Create a marker from a random point in the cluster
-        let clusterMarker = new H.map.Marker(cluster.getPosition(), {
-            icon: crimeToMapsIcon(data.category),
-
-            // Set min/max zoom with values from the cluster,
-            // otherwise clusters will be shown at all zoom levels:
-            min: cluster.getMinZoom(),
-            max: cluster.getMaxZoom(),
-        });
+        let clusterMarker = crimeToMapsMarker(cluster, data, true);
 
         // Link data from the random point from the cluster to the marker,
         // to make it accessible inside onMarkerClick
@@ -103,12 +167,7 @@ const CLUSTER_THEME = {
         // Get a reference to data object our noise points
         let data = noisePoint.getData(),
             // Create a marker for the noisePoint
-            noiseMarker = new H.map.Marker(noisePoint.getPosition(), {
-                icon: crimeToMapsIcon(data.category),
-                // Use min zoom from a noise point
-                // to show it correctly at certain zoom levels:
-                min: noisePoint.getMinZoom(),
-            });
+            noiseMarker = crimeToMapsMarker(noisePoint, data);
 
         // Link a data from the point to the marker
         // to make it accessible inside onMarkerClick

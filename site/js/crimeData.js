@@ -27,6 +27,9 @@ function fetchPoliceCrimeData(latitude, longitude, crimeType) {
 }
 
 export async function createMarkerCluster() {
+    if (currentCrimeLocation.lat == null || currentCrimeLocation.lng == null)
+        return;
+
     // const polyResp = fetch("/api/poly", { method: "POST" });
     const crimeType = crimeTypeFilter.value;
 
