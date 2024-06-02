@@ -1,5 +1,6 @@
-import { addMarkerToMap, currentCrimeLocation, map } from "./map.js";
+import { addMarkerToMap, currentCrimeLocation } from "./map.js";
 import { currentDateString } from "./dateFilter.js";
+import { clusterCrimeData } from "./clusterDisplay.js";
 // import { updateCrimeStats } from "./main.js";
 
 const crimeTypeFilter = document.getElementById("crime");
@@ -36,34 +37,6 @@ export async function createMarkerCluster() {
     );
 
     clusterCrimeData(data);
-}
-
-let clusterLayerRef = null;
-
-// Function to process and display crime data on the map
-function clusterCrimeData(data) {
-    if (clusterLayerRef) map.removeLayer(clusterLayerRef);
-
-    let dataPoints = data.map(function (crime) {
-        return new H.clustering.DataPoint(
-            crime.location.latitude,
-            crime.location.longitude
-        );
-    });
-
-    let clusteredDataProvider = new H.clustering.Provider(dataPoints, {
-        clusteringOptions: {
-            // maximum radius of the neighbourhood
-            eps: 10,
-            // minimum weight of points required to form a cluster
-            minWeight: 2,
-        },
-    });
-
-    let clusteringLayer = new H.map.layer.ObjectLayer(clusteredDataProvider);
-    clusterLayerRef = clusteringLayer;
-
-    map.addLayer(clusteringLayer);
 }
 
 crimeTypeFilter.addEventListener("change", () => {
