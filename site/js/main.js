@@ -1,8 +1,10 @@
-// there HERE api key doesnt actually have to be hidden
 window.HERE_API_KEY = "2jVwbhCihNJP6YbnvpTcYMaUso_xB6YMZWm4UiOjBLQ";
-
 import { showCrimeDefinitions } from "./crimeDefinitions.js";
-
+// import { fetchPoliceCrimeData } from "./crimeData.js"; // Import fetchPoliceCrimeData
+// import { currentDateString } from "./dateFilter.js";
+// import { createCrimeFreqPie} from "./charts.js"
+// import * as Highcharts from 'highcharts';
+import { fetchPoliceCrimeData } from "./crimeData.js";
 document.addEventListener("DOMContentLoaded", () => {
     const viewDefinitionsBtn = document.getElementById("viewDefinitions");
     if (viewDefinitionsBtn) {
@@ -12,59 +14,69 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// // restrict users from selecting months beyond the current month
-// document.addEventListener("DOMContentLoaded", () => {
-//     const monthYearInput = document.getElementById("monthYear");
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listener to the search bar input
+    const searchBar = document.getElementById('area');
+    searchBar.addEventListener('input', function(event) {
+        const query = event.target.value;
+        handleSearch(query);
+    });
 
-//     // Get the current date
-//     const currentDate = new Date();
-//     const currentYear = currentDate.getFullYear();
-//     const currentMonth = currentDate.getMonth() + 1; // Months are 0-indexed
+    async function handleSearch(query) {
+        try {
+            // You need to specify the latitude, longitude, and crimeType for fetchPoliceCrimeData
+            // Assuming you have some default values for these
+            const latitude = 51.509865; // Example: Latitude for London
+            const longitude = -0.118092; // Example: Longitude for London
+            const crimeType = "all-crime"; // Example: Default crime type
+            const data = await fetchPoliceCrimeData(latitude, longitude, crimeType);
+            
+            // Process the fetched data
+            updateStats(data);
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error.message);
+        }
+    }
 
-//     // Format the current month and year as "YYYY-MM" for input value
-//     const currentMonthValue = `${currentYear}-${currentMonth.toString().padStart(2, "0")}`;
+    function updateStats(data) {
+        // Clear previous statistics
+        const statsContainer = document.getElementById('crimeStats');
+        statsContainer.innerHTML = '';
 
-//     // Set the max attribute of the input to the current month
-//     monthYearInput.setAttribute("max", currentMonthValue);
-//     monthYearInput.value = currentMonthValue; // Set initial value to current month
+        // Check if data is an array (assuming it should be an array of crime objects)
+        if (!Array.isArray(data)) {
+            console.error('Data format is not as expected:', data);
+            return;
+        }
 
-//     // Event listener for changes in the input value
-//     monthYearInput.addEventListener("change", () => {
-//         // Parse the selected month and year from the input value
-//         const [selectedYear, selectedMonth] = monthYearInput.value.split("-");
+        // Calculate total count of crimes
+        let totalCount = data.length;
 
-//         // Convert to numbers for comparison
-//         const selectedYearNum = parseInt(selectedYear);
-//         const selectedMonthNum = parseInt(selectedMonth);
+        // Create and append total count of crimes text
+        const totalCrimesText = document.createElement('div');
+        const currentDate = new Date();
+        const monthYearString = `${currentDate.toLocaleString('default', { month: 'long' })} ${currentDate.getFullYear()}`;
+        totalCrimesText.textContent = `${totalCount} crimes occurred in ${monthYearString}`;
+        statsContainer.appendChild(totalCrimesText);
 
-//         // If the selected year is greater than the current year, or if it's the current year but the selected month is greater than the current month
-//         if (selectedYearNum > currentYear || (selectedYearNum === currentYear && selectedMonthNum > currentMonth)) {
-//             // Set the input value back to the current month
-//             monthYearInput.value = currentMonthValue;
-//         }
-//     });
-// });
+        // Create a map to store crime counts by category
+        const crimeCountsByCategory = {};
 
-// function updateCrimeStats(crimeData, totalCrimes, date) {
-//     // Update the total crime count and date
-//     const totalCrimeElement = document.getElementById("crimeStats");
-//     totalCrimeElement.textContent = `${totalCrimes} crimes were reported here in ${date}`;
+        // Iterate through the data to count crimes by category
+        data.forEach(crime => {
+            const category = crime.category;
+            if (!crimeCountsByCategory[category]) {
+                crimeCountsByCategory[category] = 0;
+            }
+            crimeCountsByCategory[category]++;
+        });
 
-//     // Update individual crime categories
-//     const crimeListElement = document.getElementById("crimeList");
-
-//     // Iterate over the crime data and update each category count
-//     for (const category in crimeData) {
-//         const count = crimeData[category];
-//         const categoryElement = document.getElementById(`${category}Count`);
-//         if (categoryElement) {
-//             categoryElement.textContent = count;
-//         } else {
-//             // Create new <li> element if category span doesn't exist
-//             const listItem = document.createElement("li");
-//             listItem.textContent = `${category}: ${count}`;
-//             crimeListElement.appendChild(listItem);
-//         }
-//     }
-// }
-// export { updateCrimeStats };
+        // Create and append new statistic elements for each crime category
+        for (const category in crimeCountsByCategory) {
+            const count = crimeCountsByCategory[category];
+            const statElement = document.createElement('div');
+            statElement.textContent = `${category}: ${count}`;
+            statsContainer.appendChild(statElement);
+        }
+    }
+});
