@@ -54,7 +54,7 @@ yearInput.addEventListener("change", (e) => {
 
 monthInput.addEventListener("change", (e) => {
     selectedMonth = e.target.value;
-
+    currentDateString = `${selectedYear}-${selectedMonth}`;
     createMarkerCluster();
 });
 

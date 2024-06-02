@@ -98,6 +98,20 @@ main {
     color: white;
 }
 
+.stats-header {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center items horizontally */
+    margin-bottom: 20px;
+}
+
+.stats-header img {
+    width: 50px; /* Adjust the width as needed */
+    height: 50px; /* Adjust the height as needed */
+    margin-right: 10px;
+}
+
+
 .stats ul {
     list-style: none;
     padding: 0;
