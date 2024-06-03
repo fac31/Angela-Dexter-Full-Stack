@@ -30,17 +30,25 @@ html {
 }
 
 header {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     flex-shrink: 0;
 }
 
 .title-container {
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 h1 {
     margin: 0;
     font-size: 2.5em;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
 }
 
 .filters {
@@ -55,10 +63,51 @@ h1 {
     flex-shrink: 0;
 }
 
-.filter {
+.views {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: black;
+    border-radius: 20px;
+    color: white;
+    flex-shrink: 0;
+}
+
+.legend-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.layers {
+    display: flex;
+    gap: 15px;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.filter,
+.layer {
     display: flex;
     flex-direction: column;
     color: white;
+}
+
+.layers-options {
+    display: flex;
+    gap: 10px;
+}
+
+.layer input[type="checkbox"] {
+    height: 20px;
+}
+
+.layer label {
+    text-align: center;
 }
 
 .filter label {
@@ -80,7 +129,6 @@ h1 {
 main {
     display: flex;
     flex-grow: 1;
-    margin-top: 20px;
 }
 
 .stats {
@@ -293,9 +341,14 @@ main {
 
     .filters {
         flex-direction: column;
-        align-items: stretch;
+        align-items: center;
         gap: 10px;
         padding: 10px;
+        flex: 1 0 auto;
+    }
+
+    .filters img {
+        width: 20px;
     }
 
     .filter {
@@ -348,5 +401,23 @@ main {
     .suggestions-item {
         font-size: 15px;
         gap: 6px;
+    }
+
+    .options {
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .views {
+        flex: 1 0 auto;
+    }
+
+    .layers,
+    .layers-options {
+        flex-direction: column;
+    }
+
+    .layers-options {
+        flex-direction: column;
     }
 }
