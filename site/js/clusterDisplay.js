@@ -29,6 +29,10 @@ function crimeTypeToIcon(crimeType) {
         case "possession-of-weapons":
             return "img/crime-violence.svg";
 
+        // special case for >3 crimes
+        case "rest":
+            return "img/icon-rest-crimes.svg";
+
         default:
             return "img/crime-other.svg";
     }
@@ -71,43 +75,86 @@ function formatCrimeType(crimeType) {
     }
 }
 
-function markerDomElement(crimeData) {
+function markerDomElement(categories) {
     const outerDiv = document.createElement("div");
-    const icon = document.createElement("img");
 
-    outerDiv.style = `
-background: black;
-border-radius: 15px;
-width: 40px;
-height: 40px;
-padding: 5px;
-display: flex;
-justify-content: center;
-align-items: center;
-object-fit: contain;
-cursor: pointer;
-user-select: none;
-opacity: 90%;
-transition: width 0.2s ease-in-out, height 0.2s ease-in-out;
+    let outerDivStyle = `
+        background: black;
+        border-radius: 15px;
+        height: 40px;
+        align-items: center;
+        justify-content: center;
+        object-fit: contain;
+        cursor: pointer;
+        user-select: none;
+        opacity: 70%;
+        transition: opacity 0.2s ease-in-out;
     `;
 
-    icon.style = `width: 100%; height: 100%; aspect-ratio: 1/1; pointer-events: none`;
-    icon.src = crimeTypeToIcon(crimeData.category);
-    icon.alt = formatCrimeType(crimeData.category);
-    icon.draggable = false;
+    // apply different styles depending on if there is 1 or more categories
+    if (categories.length === 1) {
+        outerDivStyle += "display: flex; padding: 5px;";
+    } else {
+        outerDivStyle += `
+            display: grid;
+            grid-template-columns: min-content ${"1fr ".repeat(
+                categories.length + 1
+            )} min-content;
+            width: max-content;
+            padding: 2px;
+        `;
+    }
 
-    outerDiv.title = formatCrimeType(crimeData.category);
+    outerDiv.style = outerDivStyle;
+    outerDiv.title = "Click for more detail";
 
-    outerDiv.appendChild(icon);
+    for (let i = 0; i < categories.length; i++) {
+        const category = categories[i];
+
+        const icon = document.createElement("img");
+
+        let iconStyle = `
+            height: 100%;
+            aspect-ratio: 1/1;
+            pointer-events: none;
+        `;
+
+        if (categories.length > 1) {
+            const gridAreas = [
+                "1 / 2 / 2 / 4;",
+                "1 / 3 / 2 / 5;",
+                "1 / 4 / 2 / 6;",
+                "1 / 5 / 2 / 7;",
+            ];
+
+            iconStyle += `
+                justify-self: center;
+                z-index: ${i + 1};
+                background: linear-gradient(
+                    90deg,
+                    rgba(0, 0, 0, 0) 0%,
+                    rgba(0, 0, 0, 1) 10%,
+                    rgba(0, 0, 0, 1) 100%
+                );
+                border-radius: 15px;
+                grid-area: ${gridAreas[i]}
+            `;
+        }
+
+        icon.style = iconStyle;
+        icon.src = crimeTypeToIcon(category);
+        icon.alt = formatCrimeType(category);
+        icon.draggable = false;
+
+        outerDiv.appendChild(icon);
+    }
 
     function onHoverStart(evt) {
-        evt.target.style.width = "45px";
-        evt.target.style.height = "45px";
+        evt.target.style.opacity = "100%";
         evt.target.style.zIndex = "999";
     }
     function onHoverEnd(evt) {
-        evt.target.style.width = "40px";
-        evt.target.style.height = "40px";
+        evt.target.style.opacity = "70%";
         evt.target.style.zIndex = "auto";
     }
 
@@ -125,7 +172,6 @@ transition: width 0.2s ease-in-out, height 0.2s ease-in-out;
 
 // prettier-ignore
 function getBubbleContent(data) {
-    // console.log(data)
     return [
       '<div class="bubble">',
         '<span>',
@@ -140,19 +186,19 @@ function getBubbleContent(data) {
     ].join('');
   }
 
-function crimeToMapsMarker(point, crimeData, isCluster = false) {
-    const markerData = {
-        icon: markerDomElement(crimeData),
-        min: point.getMinZoom(),
-    };
+// function crimeToMapsMarker(point, crimeData, isCluster = false) {
+//     const markerData = {
+//         icon: markerDomElement(crimeData),
+//         min: point.getMinZoom(),
+//     };
 
-    if (isCluster) markerData.max = point.getMaxZoom();
+//     if (isCluster) markerData.max = point.getMaxZoom();
 
-    return new H.map.DomMarker(point.getPosition(), markerData);
-}
+//     return new H.map.DomMarker(point.getPosition(), markerData);
+// }
 
 function onMarkerClick(e) {
-    console.log(e);
+    // console.log(e);
     // Get position of the "clicked" marker
     var position = e.target.getGeometry(),
         // Get the data associated with that marker
@@ -183,7 +229,7 @@ let clusterLayerRef = null;
 export function clusterCrimeData(data) {
     if (clusterLayerRef) removeLayer(clusterLayerRef);
 
-    let dataPoints = data.map(function (crime) {
+    const dataPoints = data.map(function (crime) {
         return new H.clustering.DataPoint(
             crime.location.latitude,
             crime.location.longitude,
@@ -192,7 +238,7 @@ export function clusterCrimeData(data) {
         );
     });
 
-    let clusteredDataProvider = new H.clustering.Provider(dataPoints, {
+    const clusteredDataProvider = new H.clustering.Provider(dataPoints, {
         clusteringOptions: {
             // maximum radius of the neighbourhood
             eps: 10,
@@ -204,7 +250,7 @@ export function clusterCrimeData(data) {
 
     clusteredDataProvider.addEventListener("tap", onMarkerClick);
 
-    let clusteringLayer = new H.map.layer.ObjectLayer(clusteredDataProvider);
+    const clusteringLayer = new H.map.layer.ObjectLayer(clusteredDataProvider);
     clusterLayerRef = clusteringLayer;
 
     addLayer(clusteringLayer);
@@ -213,43 +259,47 @@ export function clusterCrimeData(data) {
 // https://stackoverflow.com/questions/65792250/how-to-customize-here-maps-clusters
 const CLUSTER_THEME = {
     getClusterPresentation: function (cluster) {
-        // Get random DataPoint from our cluster
-        let randomDataPoint = getRandomDataPoint(cluster),
-            // Get a reference to data object that DataPoint holds
-            data = randomDataPoint.getData();
+        const allCrimeTypes = new Set();
 
-        // console.log(cluster.getWeight(), cluster.isCluster());
+        // get a set of all the crime types in the cluster
+        cluster.forEachDataPoint((p) => {
+            const crimeData = p.getData();
+            allCrimeTypes.add(crimeData.category);
+        });
+
+        // only display 3 of the crime types from the set
+        const first3Types = [...allCrimeTypes].slice(0, 3);
+
+        if (allCrimeTypes.size > 3) {
+            first3Types.push("rest");
+        }
 
         // Create a marker from a random point in the cluster
-        let clusterMarker = crimeToMapsMarker(cluster, data, true);
+        const clusterMarker = new H.map.DomMarker(cluster.getPosition(), {
+            icon: markerDomElement(first3Types),
+            min: cluster.getMinZoom(),
+            max: cluster.getMaxZoom(),
+        });
 
         // Link data from the random point from the cluster to the marker,
         // to make it accessible inside onMarkerClick
-        clusterMarker.setData(data);
+        // clusterMarker.setData(data);
 
         return clusterMarker;
     },
     getNoisePresentation: function (noisePoint) {
         // Get a reference to data object our noise points
-        let data = noisePoint.getData(),
-            // Create a marker for the noisePoint
-            noiseMarker = crimeToMapsMarker(noisePoint, data);
+        const crimeData = noisePoint.getData();
+        // Create a marker for the noisePoint
+        const noiseMarker = new H.map.DomMarker(noisePoint.getPosition(), {
+            icon: markerDomElement([crimeData.category]),
+            min: noisePoint.getMinZoom(),
+        });
 
         // Link a data from the point to the marker
         // to make it accessible inside onMarkerClick
-        noiseMarker.setData(data);
+        noiseMarker.setData(crimeData);
 
         return noiseMarker;
     },
 };
-
-function getRandomDataPoint(cluster) {
-    var dataPoints = [];
-
-    // Iterate through all points which fall into the cluster and store references to them
-    cluster.forEachDataPoint(dataPoints.push.bind(dataPoints));
-
-    // Randomly pick an index from [0, dataPoints.length) range
-    // Note how we use bitwise OR ("|") operator for that instead of Math.floor
-    return dataPoints[(Math.random() * dataPoints.length) | 0];
-}
