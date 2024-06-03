@@ -1,6 +1,8 @@
-import { addMarkerToMap, currentCrimeLocation } from "./map.js";
+import { currentCrimeLocation } from "./map.js";
 import { currentDateString } from "./dateFilter.js";
-import { clusterCrimeData } from "./clusterDisplay.js";
+import { clusterCrimeData, clearCluster } from "./clusterDisplay.js";
+import { enabledViews, prevEnabledViews } from "./layers.js";
+import { clearHeatmap, heatmapCrimeData } from "./heatmapDisplay.js";
 // import { updateCrimeStats } from "./main.js";
 
 const crimeTypeFilter = document.getElementById("crime");
@@ -26,7 +28,7 @@ function fetchPoliceCrimeData(latitude, longitude, crimeType) {
     });
 }
 
-export async function createMarkerCluster() {
+export async function createMarkerCluster(shouldClearAll = true) {
     if (currentCrimeLocation.lat == null || currentCrimeLocation.lng == null)
         return;
 
@@ -39,7 +41,14 @@ export async function createMarkerCluster() {
         crimeType
     );
 
-    clusterCrimeData(data);
+    if (prevEnabledViews.cluster != enabledViews.cluster || shouldClearAll) {
+        clusterCrimeData(data);
+    }
+    if (prevEnabledViews.heatmap != enabledViews.heatmap || shouldClearAll) {
+        heatmapCrimeData(data);
+    } else {
+        clearHeatmap();
+    }
 }
 
 crimeTypeFilter.addEventListener("change", () => {

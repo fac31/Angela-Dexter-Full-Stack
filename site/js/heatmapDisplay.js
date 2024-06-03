@@ -3,7 +3,7 @@ import { addLayer, removeLayer } from "./map.js";
 let heatmapLayerRef = null;
 
 export function heatmapCrimeData(data) {
-    if (heatmapLayerRef) removeLayer(heatmapLayerRef);
+    clearHeatmap();
 
     const heatmapProvider = new H.data.heatmap.Provider({
         colors: new H.data.heatmap.Colors(
@@ -29,5 +29,9 @@ export function heatmapCrimeData(data) {
     heatmapLayerRef = heatmapLayer;
 
     // Add a layer for the heatmap provider to the map:
-    addLayer(heatmapLayer);
+    addLayer(heatmapLayerRef);
+}
+
+export function clearHeatmap() {
+    if (heatmapLayerRef) removeLayer(heatmapLayerRef);
 }

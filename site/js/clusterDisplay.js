@@ -277,7 +277,7 @@ let clusterLayerRef = null;
 
 // Function to process and display crime data on the map
 export function clusterCrimeData(data) {
-    if (clusterLayerRef) removeLayer(clusterLayerRef);
+    clearCluster();
 
     const dataPoints = data.map(function (crime) {
         return new H.clustering.DataPoint(
@@ -304,6 +304,10 @@ export function clusterCrimeData(data) {
     clusterLayerRef = clusteringLayer;
 
     addLayer(clusteringLayer);
+}
+
+export function clearCluster() {
+    if (clusterLayerRef) removeLayer(clusterLayerRef);
 }
 
 // https://stackoverflow.com/questions/65792250/how-to-customize-here-maps-clusters
