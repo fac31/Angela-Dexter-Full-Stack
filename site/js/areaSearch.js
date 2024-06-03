@@ -50,7 +50,7 @@ function fetchLocationSuggestions(input) {
 
             clearSuggestions(true);
             places.forEach((place) => {
-                const placeName = place.place.name;
+                const placeName = place.place.name.trim();
 
                 const li = document.createElement("li");
                 li.classList.add("suggestions-item");

@@ -40,3 +40,15 @@ export function setCrimeLocation(lat, lng) {
 export function centerOnCrimeLocation() {
     map.setCenter(currentCrimeLocation);
 }
+
+export function removeLayer(layer) {
+    map.removeLayer(layer);
+}
+
+export function addLayer(layer) {
+    map.addLayer(layer);
+}
+
+export function addBubble(bubble) {
+    ui.addBubble(bubble);
+}

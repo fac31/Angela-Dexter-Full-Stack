@@ -247,6 +247,34 @@ main {
     flex-direction: column;
 }
 
+.bubble-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: max-content;
+}
+
+.bubble-heading {
+    font-size: 20px;
+}
+
+.bubble-para {
+    margin: 0;
+    font-size: 15px;
+}
+
+.bubble-location {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.bubble-list {
+    margin: 0;
+    list-style-position: inside;
+    padding: 0;
+}
+
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
@@ -299,5 +327,26 @@ main {
     .popup-content li {
         font-size: 1em; /* Ensure list items have readable font size */
         line-height: 1.4; /* Increase line height for better readability */
+    }
+
+    .bubble-container {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        width: max-content;
+    }
+
+    .bubble-heading {
+        font-size: 16px;
+    }
+
+    .bubble-para {
+        margin: 0;
+        font-size: 12px;
+    }
+
+    .suggestions-item {
+        font-size: 15px;
+        gap: 6px;
     }
 }
