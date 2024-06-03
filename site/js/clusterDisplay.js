@@ -87,10 +87,11 @@ align-items: center;
 object-fit: contain;
 cursor: pointer;
 user-select: none;
-opacity: 80%;
+opacity: 90%;
+transition: width 0.2s ease-in-out, height 0.2s ease-in-out;
     `;
 
-    icon.style = `width: 100%; height: 100%; aspect-ratio: 1/1`;
+    icon.style = `width: 100%; height: 100%; aspect-ratio: 1/1; pointer-events: none`;
     icon.src = crimeTypeToIcon(crimeData.category);
     icon.alt = formatCrimeType(crimeData.category);
     icon.draggable = false;
@@ -99,12 +100,30 @@ opacity: 80%;
 
     outerDiv.appendChild(icon);
 
-    return outerDiv;
+    function onHoverStart(evt) {
+        evt.target.style.width = "45px";
+        evt.target.style.height = "45px";
+    }
+    function onHoverEnd(evt) {
+        evt.target.style.width = "40px";
+        evt.target.style.height = "40px";
+    }
+
+    return new H.map.DomIcon(outerDiv, {
+        onAttach: function (clonedElement, domIcon, domMarker) {
+            clonedElement.addEventListener("mouseover", onHoverStart);
+            clonedElement.addEventListener("mouseout", onHoverEnd);
+        },
+        onDetach: function (clonedElement, domIcon, domMarker) {
+            clonedElement.removeEventListener("mouseover", onHoverStart);
+            clonedElement.removeEventListener("mouseout", onHoverEnd);
+        },
+    });
 }
 
 function crimeToMapsMarker(point, crimeData, isCluster = false) {
     const markerData = {
-        icon: new H.map.DomIcon(markerDomElement(crimeData)),
+        icon: markerDomElement(crimeData),
         min: point.getMinZoom(),
     };
 
@@ -118,8 +137,6 @@ let clusterLayerRef = null;
 // Function to process and display crime data on the map
 export function clusterCrimeData(data) {
     if (clusterLayerRef) removeLayer(clusterLayerRef);
-
-    console.log(data.length);
 
     let dataPoints = data.map(function (crime) {
         return new H.clustering.DataPoint(
@@ -153,6 +170,8 @@ const CLUSTER_THEME = {
         let randomDataPoint = getRandomDataPoint(cluster),
             // Get a reference to data object that DataPoint holds
             data = randomDataPoint.getData();
+
+        // console.log(cluster.getWeight(), cluster.isCluster());
 
         // Create a marker from a random point in the cluster
         let clusterMarker = crimeToMapsMarker(cluster, data, true);
