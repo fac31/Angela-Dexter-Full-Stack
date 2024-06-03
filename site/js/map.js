@@ -48,3 +48,7 @@ export function removeLayer(layer) {
 export function addLayer(layer) {
     map.addLayer(layer);
 }
+
+export function addBubble(bubble) {
+    ui.addBubble(bubble);
+}

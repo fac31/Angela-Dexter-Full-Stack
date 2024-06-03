@@ -1,4 +1,4 @@
-import { addLayer, removeLayer } from "./map.js";
+import { addLayer, removeLayer, addBubble } from "./map.js";
 
 function crimeTypeToIcon(crimeType) {
     switch (crimeType) {
@@ -103,10 +103,12 @@ transition: width 0.2s ease-in-out, height 0.2s ease-in-out;
     function onHoverStart(evt) {
         evt.target.style.width = "45px";
         evt.target.style.height = "45px";
+        evt.target.style.zIndex = "999";
     }
     function onHoverEnd(evt) {
         evt.target.style.width = "40px";
         evt.target.style.height = "40px";
+        evt.target.style.zIndex = "auto";
     }
 
     return new H.map.DomIcon(outerDiv, {
@@ -121,6 +123,23 @@ transition: width 0.2s ease-in-out, height 0.2s ease-in-out;
     });
 }
 
+// prettier-ignore
+function getBubbleContent(data) {
+    // console.log(data)
+    return [
+      '<div class="bubble">',
+        '<span>',
+          '<a class="bubble-footer" href="//commons.wikimedia.org/" target="_blank">',
+            '<img class="bubble-logo" src="data/wikimedia-logo.png" width="20" height="20" />',
+            '<span class="bubble-desc">',
+            'Photos provided by Wikimedia Commons are <br/>under the copyright of their owners.',
+            '</span>',
+          '</a>',
+        '</span>',
+      '</div>'
+    ].join('');
+  }
+
 function crimeToMapsMarker(point, crimeData, isCluster = false) {
     const markerData = {
         icon: markerDomElement(crimeData),
@@ -130,6 +149,32 @@ function crimeToMapsMarker(point, crimeData, isCluster = false) {
     if (isCluster) markerData.max = point.getMaxZoom();
 
     return new H.map.DomMarker(point.getPosition(), markerData);
+}
+
+function onMarkerClick(e) {
+    console.log(e);
+    // Get position of the "clicked" marker
+    var position = e.target.getGeometry(),
+        // Get the data associated with that marker
+        data = e.target.getData(),
+        // Merge default template with the data and get HTML
+        bubbleContent = getBubbleContent(data),
+        bubble = onMarkerClick.bubble;
+
+    // For all markers create only one bubble, if not created yet
+    if (!bubble) {
+        bubble = new H.ui.InfoBubble(position, {
+            content: bubbleContent,
+        });
+        addBubble(bubble);
+        // Cache the bubble object
+        onMarkerClick.bubble = bubble;
+    } else {
+        // Reuse existing bubble object
+        bubble.setPosition(position);
+        bubble.setContent(bubbleContent);
+        bubble.open();
+    }
 }
 
 let clusterLayerRef = null;
@@ -156,6 +201,8 @@ export function clusterCrimeData(data) {
         },
         theme: CLUSTER_THEME,
     });
+
+    clusteredDataProvider.addEventListener("tap", onMarkerClick);
 
     let clusteringLayer = new H.map.layer.ObjectLayer(clusteredDataProvider);
     clusterLayerRef = clusteringLayer;
