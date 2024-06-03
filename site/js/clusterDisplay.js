@@ -248,17 +248,6 @@ function getBubbleContent(data) {
     }
 }
 
-// function crimeToMapsMarker(point, crimeData, isCluster = false) {
-//     const markerData = {
-//         icon: markerDomElement(crimeData),
-//         min: point.getMinZoom(),
-//     };
-
-//     if (isCluster) markerData.max = point.getMaxZoom();
-
-//     return new H.map.DomMarker(point.getPosition(), markerData);
-// }
-
 function onMarkerClick(e) {
     // Get position of the "clicked" marker
     const position = e.target.getGeometry();
