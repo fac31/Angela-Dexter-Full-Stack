@@ -1,11 +1,10 @@
 <h1 align="center"> Crime Map 🔍 </h1>
 
-## What is this project about?
 This project is a web application that displays crime data on a map. Users can filter crimes by location, type, and date, and view crime statistics. The application uses the HERE API for map rendering, MapTiler for geocoding, and the Police API for crime data. The backend is built with Node.js and Express.
 Further information on the project brief can be found [here](https://learn.foundersandcoders.com/course/syllabus/foundation/full-stack/project/).
 
 ## What is this project about?
-This project aims to provide an interactive map for users to explore crime data visually. By integrating various APIs, the application allows users to:
+It aims to provide an interactive map for users to explore crime data visually. By integrating various APIs, the application allows users to:
 
 * View crime incidents on a map.
 * Filter crimes based on location, type, and date.
