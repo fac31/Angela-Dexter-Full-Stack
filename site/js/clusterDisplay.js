@@ -120,6 +120,9 @@ function markerDomElement(categories) {
         `;
 
         if (categories.length > 1) {
+            // a grid is used to overlap the different icons
+            // there can be up to 4 so these areas put the icons
+            // in the correct column
             const gridAreas = [
                 "1 / 2 / 2 / 4;",
                 "1 / 3 / 2 / 5;",
@@ -170,21 +173,80 @@ function markerDomElement(categories) {
     });
 }
 
-// prettier-ignore
 function getBubbleContent(data) {
-    return [
-      '<div class="bubble">',
-        '<span>',
-          '<a class="bubble-footer" href="//commons.wikimedia.org/" target="_blank">',
-            '<img class="bubble-logo" src="data/wikimedia-logo.png" width="20" height="20" />',
-            '<span class="bubble-desc">',
-            'Photos provided by Wikimedia Commons are <br/>under the copyright of their owners.',
-            '</span>',
-          '</a>',
-        '</span>',
-      '</div>'
-    ].join('');
-  }
+    if (data.type === "cluster") {
+        // holds all the crimes
+        const crimes = [];
+        // holds how many times each crime occured
+        const crimeTypeCounts = {};
+
+        data.data.forEachDataPoint((p) => {
+            const crimeData = p.getData();
+
+            if (crimeTypeCounts[crimeData.category] == null) {
+                crimeTypeCounts[crimeData.category] = 1;
+            } else {
+                crimeTypeCounts[crimeData.category] =
+                    crimeTypeCounts[crimeData.category] + 1;
+            }
+
+            crimes.push(crimeData);
+        });
+
+        // sort the crimes into descending order
+        const crimeCountsDescending = Object.keys(crimeTypeCounts).sort(
+            (a, b) => crimeTypeCounts[b] - crimeTypeCounts[a]
+        );
+
+        return `
+            <div class="bubble-container">
+                <hgroup>
+                    <h1 class="bubble-heading">Crimes In Cluster</h1>
+                    <ul class="bubble-list">
+                        ${crimeCountsDescending
+                            .map(
+                                (k) =>
+                                    `<li>${formatCrimeType(k)} (<em>x${
+                                        crimeTypeCounts[k]
+                                    }</em>)</li>`
+                            )
+                            .join("")}
+                    </ul>
+                </hgroup>
+            </div>
+        `;
+    } else if (data.type === "single") {
+        return `
+            <div class="bubble-container">
+                <hgroup>
+                    <h1 class="bubble-heading">Crime Type</h1>
+                    <p class="bubble-para">${formatCrimeType(
+                        data.data.category
+                    )}</p>
+                </hgroup>
+                <hgroup>
+                    <h1 class="bubble-heading">Crime Outcome</h1>
+                    <p class="bubble-para">${
+                        data.data.outcome_status?.category ||
+                        "<em>No data available</em>"
+                    }</p>
+                </hgroup>
+                <hgroup>
+                    <h1 class="bubble-heading">Crime Location</h1>
+                    <div class="bubble-location">
+                        <p class="bubble-para">
+                            ${data.data.location.street.name}
+                        </p>
+                        <em>
+                            ${data.data.location.latitude}, 
+                            ${data.data.location.longitude}
+                        </em>
+                    </div>
+                </hgroup>
+            </div>
+        `;
+    }
+}
 
 // function crimeToMapsMarker(point, crimeData, isCluster = false) {
 //     const markerData = {
@@ -198,14 +260,13 @@ function getBubbleContent(data) {
 // }
 
 function onMarkerClick(e) {
-    // console.log(e);
     // Get position of the "clicked" marker
-    var position = e.target.getGeometry(),
-        // Get the data associated with that marker
-        data = e.target.getData(),
-        // Merge default template with the data and get HTML
-        bubbleContent = getBubbleContent(data),
-        bubble = onMarkerClick.bubble;
+    const position = e.target.getGeometry();
+    // Get the data associated with that marker
+    const data = e.target.getData();
+    // Merge default template with the data and get HTML
+    const bubbleContent = getBubbleContent(data);
+    let bubble = onMarkerClick.bubble;
 
     // For all markers create only one bubble, if not created yet
     if (!bubble) {
@@ -283,7 +344,10 @@ const CLUSTER_THEME = {
 
         // Link data from the random point from the cluster to the marker,
         // to make it accessible inside onMarkerClick
-        // clusterMarker.setData(data);
+        clusterMarker.setData({
+            type: "cluster",
+            data: cluster,
+        });
 
         return clusterMarker;
     },
@@ -298,7 +362,10 @@ const CLUSTER_THEME = {
 
         // Link a data from the point to the marker
         // to make it accessible inside onMarkerClick
-        noiseMarker.setData(crimeData);
+        noiseMarker.setData({
+            type: "single",
+            data: crimeData,
+        });
 
         return noiseMarker;
     },
