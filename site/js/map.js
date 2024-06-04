@@ -7,6 +7,7 @@ const longitude = -0.1278;
 export let currentCrimeLocation = {
     lat: null,
     lng: null,
+    id: null,
 };
 
 // Initialize HERE Map
@@ -33,8 +34,8 @@ export function addMarkerToMap(lat, lng, data) {
     map.addObject(marker);
 }
 
-export function setCrimeLocation(lat, lng) {
-    currentCrimeLocation = { lat, lng };
+export function setCrimeLocation(lat, lng, id) {
+    currentCrimeLocation = { lat, lng, id };
 }
 
 export function centerOnCrimeLocation() {

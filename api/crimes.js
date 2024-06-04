@@ -5,7 +5,7 @@ const router = express.Router();
 const CRIME_DATA_URL = "https://data.police.uk/api";
 
 const formatPoly = (poly) => {
-    return poly.map((pair) => `${pair.lat},${pair.lng}`).join(":");
+    return poly.map((pair) => `${pair[0]},${pair[1]}`).join(":");
 };
 
 router.get("/last-updated", async (req, res) => {
@@ -49,23 +49,23 @@ router.get("/last-updated", async (req, res) => {
 
 router.post("/location", async (req, res) => {
     // console.log(req.body);
-    // console.log(
-    //     `${CRIME_DATA_URL}/crimes-street/${req.body.crime_type}?` +
-    //         new URLSearchParams({
-    //             //poly: formatPoly(req.body.polygon),
-    //             date: req.body.date,
-    //             lat: req.body.lat,
-    //             lng: req.body.lng,
-    //         })
-    // );
+    console.log(
+        `${CRIME_DATA_URL}/crimes-street/${req.body.crime_type}?` +
+            new URLSearchParams({
+                poly: formatPoly(req.body.polygon),
+                date: req.body.date,
+                // lat: req.body.lat,
+                // lng: req.body.lng,
+            })
+    );
     try {
         const crimeData = await fetch(
             `${CRIME_DATA_URL}/crimes-street/${req.body.crime_type}?` +
                 new URLSearchParams({
-                    //poly: formatPoly(req.body.polygon),
+                    poly: formatPoly(req.body.polygon),
                     date: req.body.date,
-                    lat: req.body.lat,
-                    lng: req.body.lng,
+                    // lat: req.body.lat,
+                    // lng: req.body.lng,
                 })
         );
 
@@ -79,14 +79,13 @@ router.post("/location", async (req, res) => {
     }
 });
 
-
 // Define the route handler for /api/crimes
-router.get('/crimes', (req, res) => {
+router.get("/crimes", (req, res) => {
     // Extract the search query parameter from the request
     const searchQuery = req.query.search;
 
     // Query the data source based on the search query
-    const filteredCrimes = crimeData.filter(crime => {
+    const filteredCrimes = crimeData.filter((crime) => {
         // Perform any filtering logic based on the search query
         // For example, filter crimes by a certain category or location
         return crime.category.includes(searchQuery); // Example filtering by crime category
@@ -95,7 +94,5 @@ router.get('/crimes', (req, res) => {
     // Send the filtered crimes back as the response
     res.json(filteredCrimes);
 });
-
-
 
 export default router;
