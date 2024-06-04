@@ -10,6 +10,7 @@
         <script src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
         <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
         <script src="https://js.api.here.com/v3/3.1/mapsjs-clustering.js"></script>
+        <script src="https://js.api.here.com/v3/3.1/mapsjs-data.js"></script>
         <link
             rel="stylesheet"
             href="https://js.api.here.com/v3/3.1/mapsjs-ui.css"
@@ -21,6 +22,8 @@
         <script type="module" src="js/crimeData.js" defer></script>
         <script type="module" src="js/dateFilter.js" defer></script>
         <script type="module" src="js/clusterDisplay.js" defer></script>
+        <script type="module" src="js/layers.js" defer></script>
+        <script type="module" src="js/loadingScreen.js" defer></script>
         <title>Crime Map</title>
     </head>
     <body>
@@ -30,61 +33,115 @@
                     <img src="/img/map-solid.svg" alt="Map Image" />
                     <h1 class="title">Crime Map</h1>
                 </div>
-                <div class="filters">
-                    <img
-                        src="/img/magnifying-glass-solid.svg"
-                        alt="Filter Image"
-                    />
-                    <form class="filter area-filter">
-                        <label for="area">Area</label>
-                        <input
-                            type="text"
-                            id="area"
-                            placeholder="Type an area.."
+                <div class="options">
+                    <div class="filters">
+                        <img
+                            src="/img/magnifying-glass-solid.svg"
+                            alt="Filter Image"
                         />
-                        <ul id="areaSuggestions" class="suggestions"></ul>
-                    </form>
-                    <form class="filter month-year">
-                        <div class="year">
-                            <label for="year">Year</label>
-                            <select id="year"></select>
-                        </div>
-                        <div class="month">
-                            <label for="month">Month</label>
-                            <select id="month"></select>
-                        </div>
-                    </form>
-                    <form class="filter">
-                        <label for="crime">Crime</label>
-                        <select id="crime">
-                            <option value="all-crime">All crimes</option>
-                            <option value="anti-social-behaviour">
-                                Anti-social behaviour
-                            </option>
-                            <option value="bicycle-theft">Bicycle theft</option>
-                            <option value="burglary">Burglary</option>
-                            <option value="criminal-damage-arson">
-                                Criminal damage and arson
-                            </option>
-                            <option value="drugs">Drugs</option>
-                            <option value="other-theft">Other theft</option>
-                            <option value="possession-of-weapons">
-                                Possesion of weapons
-                            </option>
-                            <option value="public-order">Public order</option>
-                            <option value="robbery">Robbery</option>
-                            <option value="shoplifting">Shoplifting</option>
-                            <option value="vehicle-crime">Vehicle crime</option>
-                            <option value="violent-crime">Violent crime</option>
-                            <option value="other-crime">Other crime</option>
-                        </select>
-                    </form>
+                        <form class="filter area-filter">
+                            <label for="area">Area</label>
+                            <input
+                                type="text"
+                                id="area"
+                                placeholder="Type an area.."
+                            />
+                            <ul id="areaSuggestions" class="suggestions"></ul>
+                        </form>
+                        <form class="filter month-year">
+                            <div class="year">
+                                <label for="year">Year</label>
+                                <select id="year"></select>
+                            </div>
+                            <div class="month">
+                                <label for="month">Month</label>
+                                <select id="month"></select>
+                            </div>
+                        </form>
+                        <form class="filter">
+                            <label for="crime">Crime</label>
+                            <select id="crime">
+                                <option value="all-crime">All crimes</option>
+                                <option value="anti-social-behaviour">
+                                    Anti-social behaviour
+                                </option>
+                                <option value="bicycle-theft">
+                                    Bicycle theft
+                                </option>
+                                <option value="burglary">Burglary</option>
+                                <option value="criminal-damage-arson">
+                                    Criminal damage and arson
+                                </option>
+                                <option value="drugs">Drugs</option>
+                                <option value="other-theft">Other theft</option>
+                                <option value="possession-of-weapons">
+                                    Possesion of weapons
+                                </option>
+                                <option value="public-order">
+                                    Public order
+                                </option>
+                                <option value="robbery">Robbery</option>
+                                <option value="shoplifting">Shoplifting</option>
+                                <option value="vehicle-crime">
+                                    Vehicle crime
+                                </option>
+                                <option value="violent-crime">
+                                    Violent crime
+                                </option>
+                                <option value="other-crime">Other crime</option>
+                            </select>
+                        </form>
+                    </div>
+                    <div class="views">
+                        <form>
+                            <fieldset class="layers">
+                                <span class="legend-container">
+                                    <legend>Layer Views</legend>
+                                </span>
+
+                                <div class="layers-options">
+                                    <div class="layer">
+                                        <input
+                                            type="checkbox"
+                                            id="cluster"
+                                            name="cluster"
+                                            value="Cluster"
+                                            checked
+                                        />
+                                        <label for="cluster">Cluster</label>
+                                    </div>
+                                    <div class="layer">
+                                        <input
+                                            type="checkbox"
+                                            id="heatmap"
+                                            name="heatmap"
+                                            value="Heatmap"
+                                        />
+                                        <label for="heatmap">Heatmap</label>
+                                    </div>
+                                    <div class="layer">
+                                        <input
+                                            type="checkbox"
+                                            id="polygon"
+                                            name="polygon"
+                                            value="Polygon"
+                                        />
+                                        <label for="polygon">Polygon</label>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
                 </div>
             </header>
             <main>
                 <div class="stats">
                     <div class="stats-header">
-                        <img src="img/Infobox_info_icon_white.svg.png" alt="Stats Icon" id="statsIcon"/>
+                        <img
+                            src="img/Infobox_info_icon_white.svg.png"
+                            alt="Stats Icon"
+                            id="statsIcon"
+                        />
                     </div>
                     <p id="crimeStats">Loading crime data...</p>
                     <ul id="crimeList">
@@ -94,6 +151,14 @@
                 </div>
                 <div id="crimeFreqContainer"></div>
                 <div class="map" id="map">
+                    <div id="loading-screen" class="loading">
+                        <img
+                            src="img/puff-loading.svg"
+                            draggable="false"
+                            id="loading-icon"
+                        />
+                        <p class="loading-text" id="loading-text">Loading...</p>
+                    </div>
                     <!-- Map will be embedded here -->
                 </div>
             </main>

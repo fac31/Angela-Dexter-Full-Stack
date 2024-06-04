@@ -59,7 +59,11 @@ export function fetchLocationSuggestions(input) {
 
                 // Add click event to fill input with selected suggestion
                 li.addEventListener("click", () => {
-                    setCrimeLocation(place.center.lat, place.center.lng);
+                    setCrimeLocation(
+                        place.center.lat,
+                        place.center.lng,
+                        place.place.id
+                    );
                     centerOnCrimeLocation();
 
                     createMarkerCluster();
