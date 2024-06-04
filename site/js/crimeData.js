@@ -4,7 +4,7 @@ import { clusterCrimeData, clearCluster } from "./clusterDisplay.js";
 import { enabledViews, prevEnabledViews } from "./layers.js";
 import { clearHeatmap, heatmapCrimeData } from "./heatmapDisplay.js";
 import { clearPolygon, displayPolygon } from "./displayPolygon.js";
-// import { updateStats } from "./crimeStats.js";
+import { updateStats } from "./main.js";
 
 const crimeTypeFilter = document.getElementById("crime");
 
@@ -103,6 +103,8 @@ export async function createMarkerCluster(shouldUpdateAll = true) {
     } else {
         crimeData = cachedCrimeData;
     }
+
+    updateStats(data);
 
     displayFromData(crimeData, polyData, shouldUpdateAll);
 }

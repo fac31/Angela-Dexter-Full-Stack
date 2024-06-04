@@ -4,7 +4,7 @@ import { createMarkerCluster } from "./crimeData.js";
 const areaInput = document.getElementById("area");
 const areaSuggestions = document.getElementById("areaSuggestions");
 
-function clearSuggestions(reset = false) {
+export function clearSuggestions(reset = false) {
     areaSuggestions.style.visibility = "hidden";
     areaSuggestions.replaceChildren();
 
@@ -20,7 +20,7 @@ function suggestionStatus(status) {
 }
 
 // Function to fetch location suggestions based on input
-function fetchLocationSuggestions(input) {
+export function fetchLocationSuggestions(input) {
     const url = `/api/suggestions/${input}`;
 
     suggestionStatus("Searching...");

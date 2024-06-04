@@ -13,12 +13,4 @@ router.get("/suggestions/:term", suggestions);
 router.use("/crime", crimeRouter);
 router.post("/poly", poly);
 
-// router.use("/crimes", crimeRouter);
-// New route to handle queries with the parameter "search"
-// router.get("/search", (req, res) => {
-//     const searchTerm = req.query.search;
-//     // Handle the search term, perform operations, and send response
-//     res.send(`Received search term: ${searchTerm}`);
-// });
-
 export default router;
