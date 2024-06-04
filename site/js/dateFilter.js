@@ -8,10 +8,10 @@ let lastUpdatedMonth = new Date().getMonth();
 const yearInput = document.getElementById("year");
 const monthInput = document.getElementById("month");
 
-let selectedYear = null;
-let selectedMonth = null;
+let selectedYear = currentYear;
+let selectedMonth = lastUpdatedMonth;
 
-export let currentDateString = "";
+export let currentDateString = `${selectedYear}-${selectedMonth}`;
 
 for (let y = oldestYear; y <= currentYear; y++) {
     const option = document.createElement("option");
@@ -54,7 +54,9 @@ yearInput.addEventListener("change", (e) => {
 
 monthInput.addEventListener("change", (e) => {
     selectedMonth = e.target.value;
+
     currentDateString = `${selectedYear}-${selectedMonth}`;
+
     createMarkerCluster();
 });
 
