@@ -49,15 +49,15 @@ router.get("/last-updated", async (req, res) => {
 
 router.post("/location", async (req, res) => {
     // console.log(req.body);
-    console.log(
-        `${CRIME_DATA_URL}/crimes-street/${req.body.crime_type}?` +
-            new URLSearchParams({
-                poly: formatPoly(req.body.polygon),
-                date: req.body.date,
-                // lat: req.body.lat,
-                // lng: req.body.lng,
-            })
-    );
+    // console.log(
+    //     `${CRIME_DATA_URL}/crimes-street/${req.body.crime_type}?` +
+    //         new URLSearchParams({
+    //             poly: formatPoly(req.body.polygon),
+    //             date: req.body.date,
+    //             // lat: req.body.lat,
+    //             // lng: req.body.lng,
+    //         })
+    // );
     try {
         const crimeData = await fetch(
             `${CRIME_DATA_URL}/crimes-street/${req.body.crime_type}?` +

@@ -1,6 +1,10 @@
-import { addLayer } from "./map.js";
+import { addLayer, removeLayer } from "./map.js";
+
+let polygonLayerRef = null;
 
 export function displayPolygon(geojson) {
+    clearPolygon();
+
     const reader = new H.data.geojson.Reader(null, {
         // This function is called each time parser detects a new map object
         style: function (mapObject) {
@@ -18,6 +22,13 @@ export function displayPolygon(geojson) {
     // Start parsing the data
     reader.parseData(geojson);
 
+    const polygonLayer = reader.getLayer();
+    polygonLayerRef = polygonLayer;
+
     // Add layer which shows GeoJSON data on the map
-    addLayer(reader.getLayer());
+    addLayer(polygonLayer);
+}
+
+export function clearPolygon() {
+    if (polygonLayerRef) removeLayer(polygonLayerRef);
 }
