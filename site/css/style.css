@@ -1,9 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Roboto+Slab:wght@100..900&display=swap');
 body,
 html {
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family:'Roboto Slab', serif;
     background-color: #f4f4f4;
     box-sizing: border-box;
 }
@@ -28,6 +29,9 @@ html {
     width: 20px;
     margin-right: 10px;
 }
+.title {
+    font-family: 'Abril Fatface';
+}
 
 header {
     margin-bottom: 20px;
@@ -50,7 +54,7 @@ h1 {
     margin-top: 10px;
     padding: 10px;
     background-color: black;
-    border-radius: 20px;
+    border-radius: 10px;
     color: white;
     flex-shrink: 0;
 }
@@ -90,13 +94,31 @@ main {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 30%;
     border-radius: 10px;
+    display: flex; /* Add flexbox */
+    flex-direction: column; /* Align children vertically */
+    justify-content:flex-start; /* Align content to the top */
+    margin-bottom: 10px; /* Adjusted margin */
 }
 
 .stats p {
     font-size: 18px;
     margin-bottom: 10px;
     color: white;
+    text-align: center;
 }
+
+.stats-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.stats-header img {
+    width: 50px; /* Adjust the width as needed */
+    height: 50px; /* Adjust the height as needed */
+}
+
 
 .stats ul {
     list-style: none;
@@ -115,6 +137,19 @@ main {
 .stats ul li span {
     font-weight: bold;
 }
+.stats-header {
+    perspective: 500px; /* Adds perspective to the container for 3D effect */
+}
+
+#statsIcon {
+    width: 50px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+    transition: transform 0.5s; /* Add a smooth transition effect */
+}
+
+.stats-header:hover #statsIcon {
+    transform: rotateY(180deg); /* Rotate the image by 180 degrees on the Y-axis */
+}
 
 #viewDefinitions {
     padding: 10px 20px;
@@ -123,6 +158,7 @@ main {
     color: black;
     cursor: pointer;
     border-radius: 4px;
+    font-family: 'Roboto Slab', serif;
 }
 
 #viewDefinitions:hover {
@@ -197,6 +233,7 @@ main {
     box-sizing: border-box;
     overflow-y: auto;
     max-height: 80vh;
+    border-radius: 10px;
 }
 
 .popup-content {

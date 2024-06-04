@@ -1,8 +1,8 @@
-// there HERE api key doesnt actually have to be hidden
 window.HERE_API_KEY = "2jVwbhCihNJP6YbnvpTcYMaUso_xB6YMZWm4UiOjBLQ";
-
+window.MAPTILER_API_KEY = "U6dlVfFVUNQwiAyFYJpp"
 import { showCrimeDefinitions } from "./crimeDefinitions.js";
-
+// import { createCrimeFreqPie} from "./charts.js"
+// import * as Highcharts from 'highcharts';
 document.addEventListener("DOMContentLoaded", () => {
     const viewDefinitionsBtn = document.getElementById("viewDefinitions");
     if (viewDefinitionsBtn) {
@@ -12,59 +12,246 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// // restrict users from selecting months beyond the current month
-// document.addEventListener("DOMContentLoaded", () => {
-//     const monthYearInput = document.getElementById("monthYear");
+import { fetchPoliceCrimeData } from "./crimeData.js";
 
-//     // Get the current date
-//     const currentDate = new Date();
-//     const currentYear = currentDate.getFullYear();
-//     const currentMonth = currentDate.getMonth() + 1; // Months are 0-indexed
+export let currentCrimeLocation = {
+    lat: null,
+    lng: null,
+};
 
-//     // Format the current month and year as "YYYY-MM" for input value
-//     const currentMonthValue = `${currentYear}-${currentMonth.toString().padStart(2, "0")}`;
+export function setCrimeLocation(lat, lng) {
+    currentCrimeLocation = { lat, lng };
+}
 
-//     // Set the max attribute of the input to the current month
-//     monthYearInput.setAttribute("max", currentMonthValue);
-//     monthYearInput.value = currentMonthValue; // Set initial value to current month
+const MAPTILER_URL = "https://api.maptiler.com/geocoding"; // Base URL for MapTiler Geocoding API
 
-//     // Event listener for changes in the input value
-//     monthYearInput.addEventListener("change", () => {
-//         // Parse the selected month and year from the input value
-//         const [selectedYear, selectedMonth] = monthYearInput.value.split("-");
+// document.addEventListener('DOMContentLoaded', function() {
+//     const searchBar = document.getElementById('area');
+//     const yearInput = document.getElementById('year');
+//     const monthInput = document.getElementById('month');
+//     const crimeSelect = document.getElementById('crime');
 
-//         // Convert to numbers for comparison
-//         const selectedYearNum = parseInt(selectedYear);
-//         const selectedMonthNum = parseInt(selectedMonth);
+//     // Populate the year dropdown starting from 2021
+//     const currentYear = new Date().getFullYear();
+//     for (let year = currentYear; year >= 2021; year--) {
+//         const option = document.createElement('option');
+//         option.value = year;
+//         option.textContent = year;
+//         yearInput.appendChild(option);
+//     }
 
-//         // If the selected year is greater than the current year, or if it's the current year but the selected month is greater than the current month
-//         if (selectedYearNum > currentYear || (selectedYearNum === currentYear && selectedMonthNum > currentMonth)) {
-//             // Set the input value back to the current month
-//             monthYearInput.value = currentMonthValue;
+//     // Handle location input changes
+//     searchBar.addEventListener('input', function(event) {
+//         const query = event.target.value;
+//         if (query.length > 2) {
+//             geocodeLocation(query);
 //         }
 //     });
-// });
 
-// function updateCrimeStats(crimeData, totalCrimes, date) {
-//     // Update the total crime count and date
-//     const totalCrimeElement = document.getElementById("crimeStats");
-//     totalCrimeElement.textContent = `${totalCrimes} crimes were reported here in ${date}`;
+//     // Handle changes in year, month, and crime type
+//     yearInput.addEventListener('change', handleSearch);
+//     monthInput.addEventListener('change', handleSearch);
+//     crimeSelect.addEventListener('change', handleSearch);
 
-//     // Update individual crime categories
-//     const crimeListElement = document.getElementById("crimeList");
-
-//     // Iterate over the crime data and update each category count
-//     for (const category in crimeData) {
-//         const count = crimeData[category];
-//         const categoryElement = document.getElementById(`${category}Count`);
-//         if (categoryElement) {
-//             categoryElement.textContent = count;
-//         } else {
-//             // Create new <li> element if category span doesn't exist
-//             const listItem = document.createElement("li");
-//             listItem.textContent = `${category}: ${count}`;
-//             crimeListElement.appendChild(listItem);
+//     async function geocodeLocation(query) {
+//         try {
+//             const suggestionsResp = await fetch(
+//                 `${MAPTILER_URL}/${encodeURIComponent(query)}.json?` +
+//                 new URLSearchParams({
+//                     proximity: "ip",
+//                     fuzzyMatch: true,
+//                     limit: 5,
+//                     country: "GB",
+//                     key: window.MAPTILER_API_KEY, // Ensure this key is set in your environment
+//                 })
+//             );
+//             const suggestions = await suggestionsResp.json();
+//             if (suggestions.features.length > 0) {
+//                 const location = suggestions.features[0].geometry.coordinates;
+//                 setCrimeLocation(location[1], location[0]); // MapTiler returns [lng, lat]
+//                 handleSearch();
+//             } else {
+//                 console.error('No location data found for query:', query);
+//             }
+//         } catch (error) {
+//             console.error('Error geocoding location:', error);
 //         }
 //     }
-// }
-// export { updateCrimeStats };
+
+//     async function handleSearch() {
+//         try {
+//             const crimeType = crimeSelect.value;
+//             const year = yearInput.value;
+//             const month = monthInput.value;
+//             const { lat, lng } = currentCrimeLocation;
+
+//             if (lat && lng && year && month) {
+//                 const date = `${year}-${month}`;
+//                 const data = await fetchPoliceCrimeData(lat, lng, crimeType, date);
+//                 updateStats(data);
+//             } else {
+//                 console.error('Incomplete data for fetching crime statistics.');
+//             }
+//         } catch (error) {
+//             console.error('There was a problem with the fetch operation:', error.message);
+//         }
+//     }
+
+//     function updateStats(data) {
+//         const statsContainer = document.getElementById('crimeStats');
+//         statsContainer.innerHTML = '';
+
+//         if (!Array.isArray(data)) {
+//             console.error('Data format is not as expected:', data);
+//             return;
+//         }
+
+//         let totalCount = data.length;
+
+//         const totalCrimesText = document.createElement('div');
+//         const monthYearString = `${monthInput.options[monthInput.selectedIndex].text} ${yearInput.value}`;
+//         totalCrimesText.textContent = `${totalCount} crimes occurred in ${monthYearString}`;
+//         statsContainer.appendChild(totalCrimesText);
+        
+//         const crimeCountsByCategory = {};
+
+//         data.forEach(crime => {
+//             const category = crime.category;
+//             if (!crimeCountsByCategory[category]) {
+//                 crimeCountsByCategory[category] = 0;
+//             }
+//             crimeCountsByCategory[category]++;
+//         });
+
+//         for (const category in crimeCountsByCategory) {
+//             const count = crimeCountsByCategory[category];
+//             const statElement = document.createElement('div');
+//             statElement.textContent = `${category}: ${count}`;
+//             statsContainer.appendChild(statElement);
+//         }
+//     }
+// });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const searchBar = document.getElementById('area');
+    const yearInput = document.getElementById('year');
+    const monthInput = document.getElementById('month');
+    const crimeSelect = document.getElementById('crime');
+
+    // Populate the year dropdown starting from 2021
+    const currentYear = new Date().getFullYear();
+    for (let year = currentYear; year >= 2021; year--) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearInput.appendChild(option);
+    }
+
+    // Handle location input changes
+    searchBar.addEventListener('input', function(event) {
+        const query = event.target.value;
+        if (query.length > 2) {
+            geocodeLocation(query);
+        }
+    });
+
+    // Handle changes in year, month, and crime type
+    yearInput.addEventListener('change', handleSearch);
+    monthInput.addEventListener('change', handleSearch);
+    crimeSelect.addEventListener('change', handleSearch);
+
+    async function geocodeLocation(query) {
+        try {
+            const suggestionsResp = await fetch(
+                `${MAPTILER_URL}/${encodeURIComponent(query)}.json?` +
+                new URLSearchParams({
+                    proximity: "ip",
+                    fuzzyMatch: true,
+                    limit: 5,
+                    country: "GB",
+                    key: window.MAPTILER_API_KEY, // Ensure this key is set in your environment
+                })
+            );
+            const suggestions = await suggestionsResp.json();
+            if (suggestions.features.length > 0) {
+                const location = suggestions.features[0].geometry.coordinates;
+                setCrimeLocation(location[1], location[0]); // MapTiler returns [lng, lat]
+                handleSearch();
+            } else {
+                console.error('No location data found for query:', query);
+            }
+        } catch (error) {
+            console.error('Error geocoding location:', error);
+        }
+    }
+
+    async function handleSearch() {
+        try {
+            const crimeType = crimeSelect.value;
+            const year = yearInput.value;
+            const month = monthInput.value;
+    
+            // Ensure both year and month have valid values
+            if (year && month) {
+                // Convert month to a zero-based index
+                const monthIndex = parseInt(month) - 1;
+                // Ensure monthIndex is within the range of 0-11
+                if (monthIndex >= 0 && monthIndex < 12) {
+                    // Get latitude and longitude from currentCrimeLocation
+                    const { lat, lng } = currentCrimeLocation;
+                    const date = `${year}-${month.padStart(2, '0')}`; // Ensure month is two digits
+                    const data = await fetchPoliceCrimeData(lat, lng, crimeType, date);
+                    updateStats(data, year, month);
+                } else {
+                    console.error('Invalid month:', month);
+                }
+            } else {
+                console.error('Invalid year or month:', year, month);
+            }
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error.message);
+        }
+    }
+
+    function updateStats(data, year, month) {
+        const statsContainer = document.getElementById('crimeStats');
+        statsContainer.innerHTML = '';
+    
+        if (!Array.isArray(data)) {
+            console.error('Data format is not as expected:', data);
+            return;
+        }
+    
+        const monthName = getMonthName(month);
+    
+        const totalCount = data.length;
+        const totalCrimesText = document.createElement('div');
+        totalCrimesText.textContent = `${totalCount} crimes occurred in ${monthName} ${year}.`;
+        statsContainer.appendChild(totalCrimesText);
+    
+        const crimeCountsByCategory = {};
+    
+        data.forEach(crime => {
+            const category = crime.category;
+            if (!crimeCountsByCategory[category]) {
+                crimeCountsByCategory[category] = 0;
+            }
+            crimeCountsByCategory[category]++;
+        });
+    
+        for (const category in crimeCountsByCategory) {
+            const count = crimeCountsByCategory[category];
+            const statElement = document.createElement('div');
+            statElement.textContent = `${category}: ${count}`;
+            statsContainer.appendChild(statElement);
+        }
+    }
+    
+    function getMonthName(month) {
+        const months = [
+            'January', 'February', 'March', 'April', 'May', 'June', 'July',
+            'August', 'September', 'October', 'November', 'December'
+        ];
+        return months[parseInt(month) - 1] || 'Invalid Month';
+    }
+});

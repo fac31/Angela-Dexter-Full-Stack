@@ -79,4 +79,23 @@ router.post("/location", async (req, res) => {
     }
 });
 
+
+// Define the route handler for /api/crimes
+router.get('/crimes', (req, res) => {
+    // Extract the search query parameter from the request
+    const searchQuery = req.query.search;
+
+    // Query the data source based on the search query
+    const filteredCrimes = crimeData.filter(crime => {
+        // Perform any filtering logic based on the search query
+        // For example, filter crimes by a certain category or location
+        return crime.category.includes(searchQuery); // Example filtering by crime category
+    });
+
+    // Send the filtered crimes back as the response
+    res.json(filteredCrimes);
+});
+
+
+
 export default router;
