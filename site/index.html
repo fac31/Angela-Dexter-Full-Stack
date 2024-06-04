@@ -45,22 +45,23 @@
                                 type="text"
                                 id="area"
                                 placeholder="Type an area.."
+                                aria-label="Search for an area"
                             />
-                            <ul id="areaSuggestions" class="suggestions"></ul>
+                            <ul id="areaSuggestions" class="suggestions" aria-live="polite"></ul>
                         </form>
                         <form class="filter month-year">
                             <div class="year">
                                 <label for="year">Year</label>
-                                <select id="year"></select>
+                                <select id="year" aria-label="Select a year"></select>
                             </div>
                             <div class="month">
                                 <label for="month">Month</label>
-                                <select id="month"></select>
+                                <select id="month" aria-label="Select a month"></select>
                             </div>
                         </form>
                         <form class="filter">
                             <label for="crime">Crime</label>
-                            <select id="crime">
+                            <select id="crime" aria-label="Select a crime">
                                 <option value="all-crime">All crimes</option>
                                 <option value="anti-social-behaviour">
                                     Anti-social behaviour
@@ -143,19 +144,20 @@
                             id="statsIcon"
                         />
                     </div>
-                    <p id="crimeStats">Loading crime data...</p>
-                    <ul id="crimeList">
+                    <h2 class="stats-title">Crime Statistics</h2>
+                    <p id="crimeStats" aria-live="polite">Insert area to review crime data...</p>
+                    <ul id="crimeList" aria-live="polite">
                         <!-- Placeholder for crime statistics, will be dynamically updated -->
                     </ul>
-                    <button id="viewDefinitions">View crime definitions</button>
+                    <a href="#" id="viewDefinitions">View crime definitions</a>
                 </div>
-                <div id="crimeFreqContainer"></div>
                 <div class="map" id="map">
                     <div id="loading-screen" class="loading">
                         <img
                             src="img/puff-loading.svg"
                             draggable="false"
                             id="loading-icon"
+                            alt="Loading Icon"
                         />
                         <p class="loading-text" id="loading-text">Loading...</p>
                     </div>

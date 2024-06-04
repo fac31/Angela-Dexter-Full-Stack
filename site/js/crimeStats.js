@@ -1,5 +1,4 @@
 import { fetchPoliceCrimeData } from "./crimeData.js";
-import { createCrimeFreqPie } from "./charts.js";
 
 export async function updateCrimeStats() {
     const areaInput = document.getElementById("area");
