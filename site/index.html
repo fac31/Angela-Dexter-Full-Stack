@@ -23,6 +23,7 @@
         <script type="module" src="js/dateFilter.js" defer></script>
         <script type="module" src="js/clusterDisplay.js" defer></script>
         <script type="module" src="js/layers.js" defer></script>
+        <script type="module" src="js/loadingScreen.js" defer></script>
         <title>Crime Map</title>
     </head>
     <body>
@@ -150,6 +151,14 @@
                 </div>
                 <div id="crimeFreqContainer"></div>
                 <div class="map" id="map">
+                    <div id="loading-screen" class="loading">
+                        <img
+                            src="img/puff-loading.svg"
+                            draggable="false"
+                            id="loading-icon"
+                        />
+                        <p class="loading-text" id="loading-text">Loading...</p>
+                    </div>
                     <!-- Map will be embedded here -->
                 </div>
             </main>

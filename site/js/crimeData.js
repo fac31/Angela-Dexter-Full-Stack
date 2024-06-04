@@ -5,6 +5,11 @@ import { enabledViews, prevEnabledViews } from "./layers.js";
 import { clearHeatmap, heatmapCrimeData } from "./heatmapDisplay.js";
 import { clearPolygon, displayPolygon } from "./displayPolygon.js";
 import { updateStats } from "./main.js";
+import {
+    hideLoadingScreen,
+    showLoadingScreen,
+    updateLoadingScreen,
+} from "./loadingScreen.js";
 
 const crimeTypeFilter = document.getElementById("crime");
 
@@ -24,6 +29,10 @@ export async function fetchPoliceCrimeData(polygon) {
             date: currentDateString,
         }),
     }).then((response) => {
+        if (response.status === 503) {
+            updateLoadingScreen("Area too large! Try a smaller area");
+        }
+
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }
@@ -80,11 +89,15 @@ function displayFromData(crimeData, polyData, shouldUpdateAll) {
     }
 
     updateStats(crimeData);
+
+    hideLoadingScreen();
 }
 
 export async function createMarkerCluster(shouldUpdateAll = true) {
     if (currentCrimeLocation.lat == null || currentCrimeLocation.lng == null)
         return;
+
+    showLoadingScreen("Getting Location...");
 
     // dont fetch any data unless we really have to
     let polyData;
@@ -94,6 +107,8 @@ export async function createMarkerCluster(shouldUpdateAll = true) {
     } else {
         polyData = cachedPolyData;
     }
+
+    updateLoadingScreen("Getting Crimes...");
 
     let crimeData;
     if (shouldUpdateAll) {

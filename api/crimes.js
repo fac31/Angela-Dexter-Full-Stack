@@ -69,6 +69,11 @@ router.post("/location", async (req, res) => {
                 })
         );
 
+        if (crimeData.status !== 200) {
+            res.status(503).send();
+            return;
+        }
+
         const crimes = await crimeData.json();
 
         res.status(200).json(crimes);
