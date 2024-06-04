@@ -49,29 +49,7 @@ async function fetchPolyData() {
     });
 }
 
-export async function createMarkerCluster(shouldUpdateAll = true) {
-    if (currentCrimeLocation.lat == null || currentCrimeLocation.lng == null)
-        return;
-
-    // dont fetch any data unless we really have to
-    let polyData;
-    if (shouldUpdateAll) {
-        polyData = await fetchPolyData();
-        cachedPolyData = polyData;
-    } else {
-        polyData = cachedPolyData;
-    }
-
-    let crimeData;
-    if (shouldUpdateAll) {
-        const crimeType = crimeTypeFilter.value;
-
-        crimeData = await fetchPoliceCrimeData(polyData.crimePoly, crimeType);
-        cachedCrimeData = crimeData;
-    } else {
-        crimeData = cachedCrimeData;
-    }
-
+function displayFromData(crimeData, polyData, shouldUpdateAll) {
     // these conditions prevent having to update all the different layers each time one changes
     // for example, if you disable the heatmap with clusters enabled, we shouldnt update the clusters again
     // the only time they should all change is with a new filter, which is what shouldUpdateAll does
@@ -103,6 +81,42 @@ export async function createMarkerCluster(shouldUpdateAll = true) {
     }
 }
 
+export async function createMarkerCluster(shouldUpdateAll = true) {
+    if (currentCrimeLocation.lat == null || currentCrimeLocation.lng == null)
+        return;
+
+    // dont fetch any data unless we really have to
+    let polyData;
+    if (shouldUpdateAll) {
+        polyData = await fetchPolyData();
+        cachedPolyData = polyData;
+    } else {
+        polyData = cachedPolyData;
+    }
+
+    let crimeData;
+    if (shouldUpdateAll) {
+        const crimeType = crimeTypeFilter.value;
+
+        crimeData = await fetchPoliceCrimeData(polyData.crimePoly, crimeType);
+        cachedCrimeData = crimeData;
+    } else {
+        crimeData = cachedCrimeData;
+    }
+
+    displayFromData(crimeData, polyData, shouldUpdateAll);
+}
+
+function filterCachedCrimeData(crimeType) {
+    return cachedCrimeData.filter((crime) => crime.category === crimeType);
+}
+
 crimeTypeFilter.addEventListener("change", () => {
-    createMarkerCluster();
+    let filteredData = cachedCrimeData;
+
+    if (crimeTypeFilter.value !== "all-crime") {
+        filteredData = filterCachedCrimeData(crimeTypeFilter.value);
+    }
+
+    displayFromData(filteredData, cachedPolyData, true);
 });
