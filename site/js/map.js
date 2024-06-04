@@ -1,5 +1,5 @@
 const mapElem = document.getElementById("map");
-
+window.HERE_API_KEY = "2jVwbhCihNJP6YbnvpTcYMaUso_xB6YMZWm4UiOjBLQ";
 const latitude = 51.5074; // Coordinates for London
 const longitude = -0.1278;
 

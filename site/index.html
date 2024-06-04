@@ -11,6 +11,8 @@
         <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
         <script src="https://js.api.here.com/v3/3.1/mapsjs-clustering.js"></script>
         <script src="https://js.api.here.com/v3/3.1/mapsjs-data.js"></script>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <link
             rel="stylesheet"
             href="https://js.api.here.com/v3/3.1/mapsjs-ui.css"
@@ -30,7 +32,7 @@
             <header>
                 <div class="title-container">
                     <img src="/img/map-solid.svg" alt="Map Image" />
-                    <h1>Crime Map</h1>
+                    <h1 class="title">Crime Map</h1>
                 </div>
                 <div class="options">
                     <div class="filters">
@@ -126,26 +128,20 @@
             </header>
             <main>
                 <div class="stats">
+                    <div class="stats-header">
+                        <img
+                            src="img/Infobox_info_icon_white.svg.png"
+                            alt="Stats Icon"
+                            id="statsIcon"
+                        />
+                    </div>
                     <p id="crimeStats">Loading crime data...</p>
                     <ul id="crimeList">
-                        <li>
-                            Shoplifting:
-                            <span id="shopliftingCount">Loading...</span>
-                        </li>
-                        <li>
-                            Anti-social behaviour:
-                            <span id="antiSocialBehaviourCount"
-                                >Loading...</span
-                            >
-                        </li>
-                        <!-- Add placeholders for other crime categories -->
-                        <li>
-                            All other crime:
-                            <span id="otherCrimeCount">Loading...</span>
-                        </li>
+                        <!-- Placeholder for crime statistics, will be dynamically updated -->
                     </ul>
                     <button id="viewDefinitions">View crime definitions</button>
                 </div>
+                <div id="crimeFreqContainer"></div>
                 <div class="map" id="map">
                     <!-- Map will be embedded here -->
                 </div>
