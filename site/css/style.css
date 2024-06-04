@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Roboto+Slab:wght@100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Roboto+Slab:wght@100..900&display=swap");
 body,
 html {
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family:'Roboto Slab', serif;
+    font-family: "Roboto Slab", serif;
     background-color: #f4f4f4;
     box-sizing: border-box;
 }
@@ -30,7 +30,7 @@ html {
     margin-right: 10px;
 }
 .title {
-    font-family: 'Abril Fatface';
+    font-family: "Abril Fatface";
 }
 
 header {
@@ -74,7 +74,7 @@ h1 {
     margin-top: 10px;
     padding: 10px;
     background-color: black;
-    border-radius: 20px;
+    border-radius: 10px;
     color: white;
     flex-shrink: 0;
 }
@@ -144,7 +144,7 @@ main {
     border-radius: 10px;
     display: flex; /* Add flexbox */
     flex-direction: column; /* Align children vertically */
-    justify-content:flex-start; /* Align content to the top */
+    justify-content: flex-start; /* Align content to the top */
     margin-bottom: 10px; /* Adjusted margin */
 }
 
@@ -166,7 +166,6 @@ main {
     width: 50px; /* Adjust the width as needed */
     height: 50px; /* Adjust the height as needed */
 }
-
 
 .stats ul {
     list-style: none;
@@ -196,7 +195,9 @@ main {
 }
 
 .stats-header:hover #statsIcon {
-    transform: rotateY(180deg); /* Rotate the image by 180 degrees on the Y-axis */
+    transform: rotateY(
+        180deg
+    ); /* Rotate the image by 180 degrees on the Y-axis */
 }
 
 #viewDefinitions {
@@ -206,7 +207,7 @@ main {
     color: black;
     cursor: pointer;
     border-radius: 4px;
-    font-family: 'Roboto Slab', serif;
+    font-family: "Roboto Slab", serif;
 }
 
 #viewDefinitions:hover {

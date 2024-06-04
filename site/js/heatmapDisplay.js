@@ -8,9 +8,10 @@ export function heatmapCrimeData(data) {
     const heatmapProvider = new H.data.heatmap.Provider({
         colors: new H.data.heatmap.Colors(
             {
-                0: "blue",
-                0.5: "yellow",
-                1: "red",
+                0: "#008", // dark blue
+                0.2: "#0b0", // medium green
+                0.5: "#ff0", // yellow
+                0.7: "#f00", // red
             },
             true
         ),
@@ -19,11 +20,12 @@ export function heatmapCrimeData(data) {
         assumeValues: true,
     });
 
-    // Add the data:
-    heatmapProvider.addData([
-        { lat: 52, lng: 1, value: 1 },
-        { lat: 53, lng: 2, value: 2 },
-    ]);
+    heatmapProvider.addData(
+        data.map((crime) => ({
+            lat: crime.location.latitude,
+            lng: crime.location.longitude,
+        }))
+    );
 
     const heatmapLayer = new H.map.layer.TileLayer(heatmapProvider);
     heatmapLayerRef = heatmapLayer;

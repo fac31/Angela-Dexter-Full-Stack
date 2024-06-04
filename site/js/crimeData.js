@@ -3,7 +3,7 @@ import { currentDateString } from "./dateFilter.js";
 import { clusterCrimeData, clearCluster } from "./clusterDisplay.js";
 import { enabledViews, prevEnabledViews } from "./layers.js";
 import { clearHeatmap, heatmapCrimeData } from "./heatmapDisplay.js";
-// import { updateCrimeStats } from "./main.js";
+// import { updateStats } from "./crimeStats.js";
 
 const crimeTypeFilter = document.getElementById("crime");
 
@@ -28,7 +28,7 @@ export async function fetchPoliceCrimeData(latitude, longitude, crimeType) {
     });
 }
 
-export async function createMarkerCluster(shouldClearAll = true) {
+export async function createMarkerCluster(shouldUpdateAll = true) {
     if (currentCrimeLocation.lat == null || currentCrimeLocation.lng == null)
         return;
 
@@ -41,14 +41,27 @@ export async function createMarkerCluster(shouldClearAll = true) {
         crimeType
     );
 
-    if (prevEnabledViews.cluster != enabledViews.cluster || shouldClearAll) {
+    // these conditions prevent having to update all the different layers each time one changes
+    // for example, if you disable the heatmap with clusters enabled, we shouldnt update the clusters again
+    // the only time they should all change is with a new filter, which is what shouldUpdateAll does
+    if (
+        (prevEnabledViews.cluster != enabledViews.cluster || shouldUpdateAll) &&
+        enabledViews.cluster
+    ) {
         clusterCrimeData(data);
+    } else if (!enabledViews.cluster) {
+        clearCluster();
     }
-    if (prevEnabledViews.heatmap != enabledViews.heatmap || shouldClearAll) {
+
+    if (
+        (prevEnabledViews.heatmap != enabledViews.heatmap || shouldUpdateAll) &&
+        enabledViews.heatmap
+    ) {
         heatmapCrimeData(data);
-    } else {
+    } else if (!enabledViews.heatmap) {
         clearHeatmap();
     }
+
 }
 
 crimeTypeFilter.addEventListener("change", () => {

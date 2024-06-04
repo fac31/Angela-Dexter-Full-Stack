@@ -1,4 +1,4 @@
-import Highcharts from 'highcharts';
+// import Highcharts from 'highcharts';
 
 // crimeCount should be a number, crimeCategoryFreq should be an object of category:count.
 export function createCrimeFreqPie(crimeCount, crimeCategoryFreq) {
@@ -6,12 +6,10 @@ export function createCrimeFreqPie(crimeCount, crimeCategoryFreq) {
     const onePercent = crimeCount / 100;
 
     for (const cat in crimeCategoryFreq) {
-        crimeFreqChartSeriesData.push(
-            {
-                name: cat,
-                y: crimeCategoryFreq[cat] / onePercent
-            }
-        );
+        crimeFreqChartSeriesData.push({
+            name: cat,
+            y: crimeCategoryFreq[cat] / onePercent,
+        });
     }
 
     Highcharts.chart("crimeFreqContainer", {
@@ -19,18 +17,18 @@ export function createCrimeFreqPie(crimeCount, crimeCategoryFreq) {
             plotBackgroundColor: null,
             plotBorderWidth: null,
             plotShadow: false,
-            type: "pie"
+            type: "pie",
         },
         title: {
-            text: ""
+            text: "",
         },
         tooltip: {
-            pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>"
+            pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
         },
         accessibility: {
             point: {
-                valueSuffix: "%"
-            }
+                valueSuffix: "%",
+            },
         },
         plotOptions: {
             pie: {
@@ -38,14 +36,16 @@ export function createCrimeFreqPie(crimeCount, crimeCategoryFreq) {
                 cursor: "pointer",
                 dataLabels: {
                     enabled: true,
-                    format: "<b>{point.name}</b>: {point.percentage:.1f} %"
-                }
-            }
+                    format: "<b>{point.name}</b>: {point.percentage:.1f} %",
+                },
+            },
         },
-        series: [{
-            name: "Crime Frequency",
-            colorByPoint: true,
-            data: crimeFreqChartSeriesData
-        }]
+        series: [
+            {
+                name: "Crime Frequency",
+                colorByPoint: true,
+                data: crimeFreqChartSeriesData,
+            },
+        ],
     });
 }
