@@ -11,13 +11,5 @@ const router = express.Router();
 // so this would be /api/suggestions
 router.get("/suggestions/:term", suggestions);
 router.use("/crime", crimeRouter);
-// router.use("/crimes", crimeRouter);
-// router.post("/poly", poly);
-// New route to handle queries with the parameter "search"
-// router.get("/search", (req, res) => {
-//     const searchTerm = req.query.search;
-//     // Handle the search term, perform operations, and send response
-//     res.send(`Received search term: ${searchTerm}`);
-// });
 
 export default router;

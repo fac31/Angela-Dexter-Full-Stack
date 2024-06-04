@@ -1,6 +1,7 @@
 import { addMarkerToMap, currentCrimeLocation } from "./map.js";
 import { currentDateString } from "./dateFilter.js";
 import { clusterCrimeData } from "./clusterDisplay.js";
+import { updateStats } from "./main.js";
 // import { updateCrimeStats } from "./main.js";
 
 const crimeTypeFilter = document.getElementById("crime");
@@ -38,7 +39,7 @@ export async function createMarkerCluster() {
         currentCrimeLocation.lng,
         crimeType
     );
-
+    updateStats(data);
     clusterCrimeData(data);
 }
 
