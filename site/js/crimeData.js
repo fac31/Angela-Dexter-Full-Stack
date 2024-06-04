@@ -12,7 +12,7 @@ const crimeTypeFilter = document.getElementById("crime");
 let cachedCrimeData = null;
 let cachedPolyData = null;
 
-export async function fetchPoliceCrimeData(polygon, crimeType) {
+export async function fetchPoliceCrimeData(polygon) {
     // Fetch crime data and return a promise
     return fetch("/api/crime/location", {
         method: "POST",
@@ -20,7 +20,6 @@ export async function fetchPoliceCrimeData(polygon, crimeType) {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            crime_type: crimeType,
             polygon: polygon,
             date: currentDateString,
         }),
@@ -79,6 +78,8 @@ function displayFromData(crimeData, polyData, shouldUpdateAll) {
     } else if (!enabledViews.polygon) {
         clearPolygon();
     }
+
+    updateStats(crimeData);
 }
 
 export async function createMarkerCluster(shouldUpdateAll = true) {
@@ -98,13 +99,18 @@ export async function createMarkerCluster(shouldUpdateAll = true) {
     if (shouldUpdateAll) {
         const crimeType = crimeTypeFilter.value;
 
-        crimeData = await fetchPoliceCrimeData(polyData.crimePoly, crimeType);
+        // the fetch now always requests every type of crime, and we manually do the filtering
+        crimeData = await fetchPoliceCrimeData(polyData.crimePoly);
+        // we want to cache the full data set
         cachedCrimeData = crimeData;
+
+        if (crimeType !== "all-crime") {
+            // and then only display the filtered data
+            crimeData = filterCachedCrimeData(crimeType);
+        }
     } else {
         crimeData = cachedCrimeData;
     }
-
-    updateStats(data);
 
     displayFromData(crimeData, polyData, shouldUpdateAll);
 }

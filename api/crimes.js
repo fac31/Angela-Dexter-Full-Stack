@@ -60,7 +60,7 @@ router.post("/location", async (req, res) => {
     // );
     try {
         const crimeData = await fetch(
-            `${CRIME_DATA_URL}/crimes-street/${req.body.crime_type}?` +
+            `${CRIME_DATA_URL}/crimes-street/all-crime?` +
                 new URLSearchParams({
                     poly: formatPoly(req.body.polygon),
                     date: req.body.date,
@@ -75,7 +75,7 @@ router.post("/location", async (req, res) => {
     } catch (e) {
         console.log(`Failed to get crimes: ${e}\n${e.stack}`);
 
-        res.status(403);
+        res.status(503);
     }
 });
 
