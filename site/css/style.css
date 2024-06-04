@@ -141,17 +141,24 @@ main {
     perspective: 500px; /* Adds perspective to the container for 3D effect */
 }
 
+.stats-title {
+    color: white; /* Change this to the desired text color */
+    font-size: 22px; /* Adjust the font size as needed */
+    text-align: center; /* Center align the text */
+    margin-top: -15px; /* Add some margin at the top */
+    font-weight: bold; /* Make the text bold */
+}
 #statsIcon {
-    width: 50px; /* Adjust the width as needed */
-    height: auto; /* Maintain aspect ratio */
-    transition: transform 0.5s; /* Add a smooth transition effect */
+    width: 50px;
+    height: auto;
+    transition: transform 0.5s;
 }
 
 .stats-header:hover #statsIcon {
-    transform: rotateY(180deg); /* Rotate the image by 180 degrees on the Y-axis */
+    transform: rotateY(180deg);
 }
 
-#viewDefinitions {
+/* #viewDefinitions {
     padding: 10px 20px;
     border: none;
     background-color: #76abae;
@@ -159,10 +166,20 @@ main {
     cursor: pointer;
     border-radius: 4px;
     font-family: 'Roboto Slab', serif;
+} */
+
+#viewDefinitions {
+    color: #808080; /* Change to the desired link color */
+    text-decoration: underline; /* Underline to indicate it's a link */
+    cursor: pointer; /* Pointer cursor to indicate it's clickable */
+    display: inline-block; /* Ensures the link can have padding */
+    margin-top: 10px; /* Adjust margin as needed */
+    font-size: 16px; /* Adjust font size if necessary */
+    text-align: center;
 }
 
 #viewDefinitions:hover {
-    background-color: #eeeeee;
+    color: #a59e9e;
 }
 
 .map {
