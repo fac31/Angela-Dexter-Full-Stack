@@ -4,12 +4,13 @@ import { clusterCrimeData, clearCluster } from "./clusterDisplay.js";
 import { enabledViews, prevEnabledViews } from "./layers.js";
 import { clearHeatmap, heatmapCrimeData } from "./heatmapDisplay.js";
 import { clearPolygon, displayPolygon } from "./displayPolygon.js";
-import { updateStats } from "./main.js";
+import { updateStats } from "./crimeStats.js";
 import {
     hideLoadingScreen,
     showLoadingScreen,
     updateLoadingScreen,
 } from "./loadingScreen.js";
+import { currentFilters } from "./crimeFilter.js";
 
 const crimeTypeFilter = document.getElementById("crime");
 
@@ -58,6 +59,9 @@ async function fetchPolyData() {
 }
 
 function displayFromData(crimeData, polyData, shouldUpdateAll) {
+    if (currentCrimeLocation.lat == null || currentCrimeLocation.lng == null)
+        return;
+
     // these conditions prevent having to update all the different layers each time one changes
     // for example, if you disable the heatmap with clusters enabled, we shouldnt update the clusters again
     // the only time they should all change is with a new filter, which is what shouldUpdateAll does
@@ -130,16 +134,32 @@ export async function createMarkerCluster(shouldUpdateAll = true) {
     displayFromData(crimeData, polyData, shouldUpdateAll);
 }
 
-function filterCachedCrimeData(crimeType) {
-    return cachedCrimeData.filter((crime) => crime.category === crimeType);
-}
-
-crimeTypeFilter.addEventListener("change", () => {
+function filterCachedCrimeData() {
     let filteredData = cachedCrimeData;
 
-    if (crimeTypeFilter.value !== "all-crime") {
-        filteredData = filterCachedCrimeData(crimeTypeFilter.value);
+    if (currentFilters.includes("all-crime")) {
+        displayFromData(filteredData, cachedPolyData, true);
+        return;
     }
 
+    filteredData = cachedCrimeData.filter((crime) =>
+        currentFilters.includes(crime.category)
+    );
+
     displayFromData(filteredData, cachedPolyData, true);
+}
+
+crimeTypeFilter.addEventListener("addItem", (e) => {
+    currentFilters.push(e.detail.value);
+
+    filterCachedCrimeData();
+});
+
+crimeTypeFilter.addEventListener("removeItem", (e) => {
+    currentFilters.splice(
+        currentFilters.findIndex((v) => v === e.detail.value),
+        1
+    );
+
+    filterCachedCrimeData();
 });

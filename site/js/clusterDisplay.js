@@ -1,4 +1,5 @@
 import { addLayer, removeLayer, addBubble } from "./map.js";
+import { getMonthName } from "./crimeStats.js";
 
 function crimeTypeToIcon(crimeType) {
     switch (crimeType) {
@@ -38,7 +39,7 @@ function crimeTypeToIcon(crimeType) {
     }
 }
 
-function formatCrimeType(crimeType) {
+export function formatCrimeType(crimeType) {
     switch (crimeType) {
         case "anti-social-behaviour":
             return "Anti-Social Behaviour";
@@ -173,6 +174,17 @@ function markerDomElement(categories) {
     });
 }
 
+async function fetchCrimeOutcome(id) {
+    if (id.length === 0) return;
+
+    return fetch(`/api/crime/outcome/${id}`).then((response) => {
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        return response.json();
+    });
+}
+
 function getBubbleContent(data) {
     if (data.type === "cluster") {
         // holds all the crimes
@@ -216,37 +228,72 @@ function getBubbleContent(data) {
             </div>
         `;
     } else if (data.type === "single") {
-        return `
-            <div class="bubble-container">
-                <hgroup>
-                    <h1 class="bubble-heading">Crime Type</h1>
-                    <p class="bubble-para">${formatCrimeType(
-                        data.data.category
-                    )}</p>
-                </hgroup>
-                <hgroup>
-                    <h1 class="bubble-heading">Crime Outcome</h1>
-                    <p class="bubble-para">${
-                        data.data.outcome_status?.category ||
-                        "<em>No data available</em>"
-                    }</p>
-                </hgroup>
-                <hgroup>
-                    <h1 class="bubble-heading">Crime Location</h1>
-                    <div class="bubble-location">
-                        <p class="bubble-para">
-                            ${data.data.location.street.name}
-                        </p>
-                        <em>
-                            ${data.data.location.latitude}, 
-                            ${data.data.location.longitude}
-                        </em>
-                    </div>
-                </hgroup>
-            </div>
-        `;
+        // this is its own function since it also has to be called
+        // once the promise resolves with the content of the outcomes
+        function content(outcomesString) {
+            return `
+                <div class="bubble-container">
+                    <hgroup>
+                        <h1 class="bubble-heading">Crime Type</h1>
+                        <p class="bubble-para">${formatCrimeType(
+                            data.data.category
+                        )}</p>
+                    </hgroup>
+                    <hgroup>
+                        <h1 class="bubble-heading">Crime Outcome</h1>
+                        ${outcomesString}
+                    </hgroup>
+                    <hgroup>
+                        <h1 class="bubble-heading">Crime Location</h1>
+                        <div class="bubble-location">
+                            <p class="bubble-para">
+                                ${data.data.location.street.name}
+                            </p>
+                            <em>
+                                ${data.data.location.latitude}, 
+                                ${data.data.location.longitude}
+                            </em>
+                        </div>
+                    </hgroup>
+                </div>
+            `;
+        }
+
+        const outcomes = fetchCrimeOutcome(data.data.persistent_id)
+            .then((outcomes) => {
+                if (outcomes == null) return "<em>No data available</em>";
+                return `
+                    <ul class="bubble-list">
+                        ${outcomes
+                            .map((outcome) => {
+                                const date = outcome.date.split("-");
+                                const year = date[0];
+                                const month = getMonthName(date[1]);
+
+                                return `
+                                    <li>
+                                        ${outcome.category.name} (<em>${month}, ${year}</em>)
+                                    </li>
+                                `;
+                            })
+                            .join("")}
+                    </ul>
+                `;
+            })
+            .catch((e) => {
+                console.error(e);
+                return "<em>Failed to get outcome</em>";
+            });
+
+        outcomes.then((d) => {
+            if (bubble) bubble.setContent(content(d));
+        });
+
+        return content("<em>Loading...</em>");
     }
 }
+
+let bubble = null;
 
 function onMarkerClick(e) {
     // Get position of the "clicked" marker
@@ -255,7 +302,7 @@ function onMarkerClick(e) {
     const data = e.target.getData();
     // Merge default template with the data and get HTML
     const bubbleContent = getBubbleContent(data);
-    let bubble = onMarkerClick.bubble;
+    bubble = onMarkerClick.bubble;
 
     // For all markers create only one bubble, if not created yet
     if (!bubble) {

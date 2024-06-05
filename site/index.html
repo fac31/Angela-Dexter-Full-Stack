@@ -5,6 +5,7 @@
         <!-- <link rel="icon" type="image/svg+xml" href="" /> -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="css/style.css" />
+
         <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
         <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
         <script src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
@@ -15,6 +16,11 @@
             rel="stylesheet"
             href="https://js.api.here.com/v3/3.1/mapsjs-ui.css"
         />
+        <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
+        />
         <script type="module" src="js/main.js" defer></script>
         <script type="module" src="js/areaSearch.js" defer></script>
         <script type="module" src="js/crimeDefinitions.js" defer></script>
@@ -24,6 +30,7 @@
         <script type="module" src="js/clusterDisplay.js" defer></script>
         <script type="module" src="js/layers.js" defer></script>
         <script type="module" src="js/loadingScreen.js" defer></script>
+        <script type="module" src="js/crimeFilter.js" defer></script>
         <title>Crime Map</title>
     </head>
     <body>
@@ -47,50 +54,35 @@
                                 placeholder="Type an area.."
                                 aria-label="Search for an area"
                             />
-                            <ul id="areaSuggestions" class="suggestions" aria-live="polite"></ul>
+                            <ul
+                                id="areaSuggestions"
+                                class="suggestions"
+                                aria-live="polite"
+                            ></ul>
                         </form>
                         <form class="filter month-year">
                             <div class="year">
                                 <label for="year">Year</label>
-                                <select id="year" aria-label="Select a year"></select>
+                                <select
+                                    id="year"
+                                    aria-label="Select a year"
+                                ></select>
                             </div>
                             <div class="month">
                                 <label for="month">Month</label>
-                                <select id="month" aria-label="Select a month"></select>
+                                <select
+                                    id="month"
+                                    aria-label="Select a month"
+                                ></select>
                             </div>
                         </form>
-                        <form class="filter">
+                        <form class="filter filter-crime">
                             <label for="crime">Crime</label>
-                            <select id="crime" aria-label="Select a crime">
-                                <option value="all-crime">All crimes</option>
-                                <option value="anti-social-behaviour">
-                                    Anti-social behaviour
-                                </option>
-                                <option value="bicycle-theft">
-                                    Bicycle theft
-                                </option>
-                                <option value="burglary">Burglary</option>
-                                <option value="criminal-damage-arson">
-                                    Criminal damage and arson
-                                </option>
-                                <option value="drugs">Drugs</option>
-                                <option value="other-theft">Other theft</option>
-                                <option value="possession-of-weapons">
-                                    Possesion of weapons
-                                </option>
-                                <option value="public-order">
-                                    Public order
-                                </option>
-                                <option value="robbery">Robbery</option>
-                                <option value="shoplifting">Shoplifting</option>
-                                <option value="vehicle-crime">
-                                    Vehicle crime
-                                </option>
-                                <option value="violent-crime">
-                                    Violent crime
-                                </option>
-                                <option value="other-crime">Other crime</option>
-                            </select>
+                            <select
+                                id="crime"
+                                aria-label="Select a crime"
+                                multiple
+                            ></select>
                         </form>
                     </div>
                     <div class="views">
@@ -145,7 +137,9 @@
                         />
                     </div>
                     <h2 class="stats-title">Crime Statistics</h2>
-                    <p id="crimeStats" aria-live="polite">Insert area to review crime data...</p>
+                    <p id="crimeStats" aria-live="polite">
+                        Insert area to review crime data...
+                    </p>
                     <ul id="crimeList" aria-live="polite">
                         <!-- Placeholder for crime statistics, will be dynamically updated -->
                     </ul>

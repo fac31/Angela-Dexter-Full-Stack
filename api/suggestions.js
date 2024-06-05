@@ -43,7 +43,7 @@ router.get("/suggestions/:term", async (req, res) => {
     } catch (e) {
         console.log(`Failed to get suggestions: ${e}`);
 
-        res.status(403);
+        res.status(503).send();
     }
 });
 

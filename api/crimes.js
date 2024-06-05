@@ -50,7 +50,7 @@ router.get("/last-updated", async (req, res) => {
 router.post("/location", async (req, res) => {
     // console.log(req.body);
     // console.log(
-    //     `${CRIME_DATA_URL}/crimes-street/${req.body.crime_type}?` +
+    //     `${CRIME_DATA_URL}/crimes-street/all-crime?` +
     //         new URLSearchParams({
     //             poly: formatPoly(req.body.polygon),
     //             date: req.body.date,
@@ -58,16 +58,29 @@ router.post("/location", async (req, res) => {
     //             // lng: req.body.lng,
     //         })
     // );
+    // console.log(req.body.polygon);
+
     try {
-        const crimeData = await fetch(
-            `${CRIME_DATA_URL}/crimes-street/all-crime?` +
-                new URLSearchParams({
-                    poly: formatPoly(req.body.polygon),
-                    date: req.body.date,
-                    // lat: req.body.lat,
-                    // lng: req.body.lng,
-                })
-        );
+        let crimeData;
+
+        if (req.body.polygon.type === "poly") {
+            crimeData = await fetch(
+                `${CRIME_DATA_URL}/crimes-street/all-crime?` +
+                    new URLSearchParams({
+                        poly: formatPoly(req.body.polygon.data),
+                        date: req.body.date,
+                    })
+            );
+        } else {
+            crimeData = await fetch(
+                `${CRIME_DATA_URL}/crimes-street/all-crime?` +
+                    new URLSearchParams({
+                        date: req.body.date,
+                        lat: req.body.polygon.data[0],
+                        lng: req.body.polygon.data[1],
+                    })
+            );
+        }
 
         if (crimeData.status !== 200) {
             res.status(503).send();
@@ -80,24 +93,24 @@ router.post("/location", async (req, res) => {
     } catch (e) {
         console.log(`Failed to get crimes: ${e}\n${e.stack}`);
 
-        res.status(503);
+        res.status(503).send();
     }
 });
 
-// Define the route handler for /api/crimes
-router.get("/crimes", (req, res) => {
-    // Extract the search query parameter from the request
-    const searchQuery = req.query.search;
+router.get("/outcome/:crimeId", async (req, res) => {
+    try {
+        const outcomeResp = await fetch(
+            `${CRIME_DATA_URL}/outcomes-for-crime/${req.params.crimeId}`
+        );
 
-    // Query the data source based on the search query
-    const filteredCrimes = crimeData.filter((crime) => {
-        // Perform any filtering logic based on the search query
-        // For example, filter crimes by a certain category or location
-        return crime.category.includes(searchQuery); // Example filtering by crime category
-    });
+        const outcome = await outcomeResp.json();
 
-    // Send the filtered crimes back as the response
-    res.json(filteredCrimes);
+        res.status(200).json(outcome.outcomes);
+    } catch (e) {
+        console.log(`Failed to get crime outcome: ${e}\n${e.stack}`);
+
+        res.status(503).send();
+    }
 });
 
 export default router;

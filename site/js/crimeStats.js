@@ -1,60 +1,85 @@
-import { fetchPoliceCrimeData } from "./crimeData.js";
+import { formatCrimeType } from "./clusterDisplay.js";
 
-export async function updateCrimeStats() {
-    const areaInput = document.getElementById("area");
-    const latitude = parseFloat(areaInput.dataset.latitude); // Assuming latitude is stored in a data attribute
-    const longitude = parseFloat(areaInput.dataset.longitude); // Assuming longitude is stored in a data attribute
-
-    const crimeSelect = document.getElementById("crime");
-    const crimeType = crimeSelect.value;
-    const date = currentDateString; // Use the currentDateString from your date filter
-
-    try {
-        const crimeData = await fetchPoliceCrimeData(
-            latitude,
-            longitude,
-            crimeType,
-            date
-        ); // Await fetchPoliceCrimeData
-        if (!crimeData || crimeData.length === 0) {
-            crimeStats.textContent =
-                "No crime data found for the selected criteria.";
-            return;
-        }
-
-        crimeStats.textContent = "Crime data:";
-
-        const crimeCounts = {};
-        crimeData.forEach((crime) => {
-            const category = crime.category.replace(/-/g, " ");
-            crimeCounts[category] = (crimeCounts[category] || 0) + 1;
-        });
-
-        createCrimeFreqPie(crimeData.length, crimeCounts); // Call the pie chart creation function
-    } catch (error) {
-        console.error("Error fetching crime data:", error);
-        crimeStats.textContent = "Error fetching crime data.";
-    }
+export function getMonthName(month) {
+    const months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
+    return months[parseInt(month) - 1] || "Invalid Month";
 }
 
-export function populateYearMonthDropdowns() {
-    const yearSelect = document.getElementById("year");
-    const monthSelect = document.getElementById("month");
+export function updateStats(data) {
+    const yearInput = document.getElementById("year");
+    const monthInput = document.getElementById("month");
+    const year = yearInput.value;
+    const month = monthInput.value;
+    const statsContainer = document.getElementById("crimeStats");
+    statsContainer.innerHTML = "";
 
-    const currentYear = new Date().getFullYear();
-    for (let i = 2020; i <= currentYear; i++) {
-        const option = document.createElement("option");
-        option.value = i;
-        option.textContent = i;
-        yearSelect.appendChild(option);
+    if (!Array.isArray(data)) {
+        console.error("Data format is not as expected:", data);
+        return;
     }
 
-    for (let i = 1; i <= 12; i++) {
-        const option = document.createElement("option");
-        option.value = i.toString().padStart(2, "0");
-        option.textContent = new Date(0, i - 1).toLocaleString("default", {
-            month: "long",
-        });
-        monthSelect.appendChild(option);
+    // const monthName = getMonthName(month);
+
+    // const totalCount = data.length;
+    // const totalCrimesText = document.createElement("div");
+    // totalCrimesText.textContent = `${totalCount} crimes occurred in ${monthName} ${year}.`;
+    // statsContainer.appendChild(totalCrimesText);
+
+    const monthName = getMonthName(month);
+    const totalCount = data.length;
+
+    // Create a span element for the dynamic text
+    const totalCrimesText = document.createElement("span");
+    totalCrimesText.textContent = `${totalCount} crimes occurred in ${monthName} ${year}.`;
+
+    // Wrap the number of crimes and the month year in <strong> tags
+    totalCrimesText.innerHTML = totalCrimesText.innerHTML.replace(
+        /(\d+) crimes occurred in (\w+ \d+)/,
+        "<strong>$1</strong> crimes occurred in <strong>$2</strong>"
+    );
+
+    // Apply a class to the span for easier CSS targeting
+    totalCrimesText.classList.add("crime-stats-text");
+
+    // Append the span to the stats container
+    statsContainer.appendChild(totalCrimesText);
+
+    const crimeCountsByCategory = {};
+
+    data.forEach((crime) => {
+        const category = crime.category;
+        if (!crimeCountsByCategory[category]) {
+            crimeCountsByCategory[category] = 0;
+        }
+        crimeCountsByCategory[category]++;
+    });
+
+    for (const category in crimeCountsByCategory) {
+        const count = crimeCountsByCategory[category];
+        const statElement = document.createElement("li");
+        // statElement.textContent = `${category}: ${count}`;
+        // statsContainer.appendChild(statElement);
+
+        // Wrap the category name and count in <strong> tags
+        statElement.innerHTML = `${formatCrimeType(category)}: ${count}`;
+
+        // Apply a class to the list item for easier CSS targeting
+        statElement.classList.add("crime-stat-item");
+
+        // Append the list item to the stats container
+        statsContainer.appendChild(statElement);
     }
 }
