@@ -79,7 +79,7 @@ router.post("/poly", async (req, res) => {
     } catch (e) {
         console.log(`Failed to get polygon data: ${e}`);
 
-        res.status(403);
+        res.status(503).send();
     }
 });
 

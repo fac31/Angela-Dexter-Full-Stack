@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-function getMonthName(month) {
+export function getMonthName(month) {
     const months = [
         "January",
         "February",
@@ -57,7 +57,10 @@ export function updateStats(data) {
     totalCrimesText.textContent = `${totalCount} crimes occurred in ${monthName} ${year}.`;
 
     // Wrap the number of crimes and the month year in <strong> tags
-    totalCrimesText.innerHTML = totalCrimesText.innerHTML.replace(/(\d+) crimes occurred in (\w+ \d+)/, '<strong>$1</strong> crimes occurred in <strong>$2</strong>');
+    totalCrimesText.innerHTML = totalCrimesText.innerHTML.replace(
+        /(\d+) crimes occurred in (\w+ \d+)/,
+        "<strong>$1</strong> crimes occurred in <strong>$2</strong>"
+    );
 
     // Apply a class to the span for easier CSS targeting
     totalCrimesText.classList.add("crime-stats-text");
