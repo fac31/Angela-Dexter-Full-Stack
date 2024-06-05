@@ -1,16 +1,18 @@
-document.getElementById('viewDefinitions').addEventListener('click', function(event) {
-    event.preventDefault(); // Prevent the default link behavior
-    showCrimeDefinitions();
-});
+document
+    .getElementById("viewDefinitions")
+    .addEventListener("click", function (event) {
+        event.preventDefault(); // Prevent the default link behavior
+        showCrimeDefinitions();
+    });
 
 export function showCrimeDefinitions() {
     // Create a popup container
-    const popupContainer = document.createElement('div');
-    popupContainer.classList.add('popup');
+    const popupContainer = document.createElement("div");
+    popupContainer.classList.add("popup");
 
     // Create popup content
-    const popupContent = document.createElement('div');
-    popupContent.classList.add('popup-content');
+    const popupContent = document.createElement("div");
+    popupContent.classList.add("popup-content");
 
     // Add crime definitions to the popup content
     popupContent.innerHTML = `
@@ -31,10 +33,10 @@ export function showCrimeDefinitions() {
     `;
 
     // Close button
-    const closeButton = document.createElement('span');
-    closeButton.classList.add('close');
-    closeButton.textContent = 'x';
-    closeButton.addEventListener('click', () => {
+    const closeButton = document.createElement("span");
+    closeButton.classList.add("close");
+    closeButton.textContent = "x";
+    closeButton.addEventListener("click", () => {
         popupContainer.remove();
     });
 
@@ -43,18 +45,18 @@ export function showCrimeDefinitions() {
     popupContainer.appendChild(popupContent);
 
     // Append the popup container to the body
-    document.body.appendChild(popupContainer); 
+    document.body.appendChild(popupContainer);
 
     // Function to handle outside click
     function handleOutsideClick(event) {
         if (!popupContent.contains(event.target)) {
             popupContainer.remove();
-            document.removeEventListener('click', handleOutsideClick);
+            document.removeEventListener("click", handleOutsideClick);
         }
     }
 
     // Add event listener for clicks outside the popup content
     setTimeout(() => {
-        document.addEventListener('click', handleOutsideClick);
+        document.addEventListener("click", handleOutsideClick);
     }, 0);
 }

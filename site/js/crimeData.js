@@ -4,7 +4,7 @@ import { clusterCrimeData, clearCluster } from "./clusterDisplay.js";
 import { enabledViews, prevEnabledViews } from "./layers.js";
 import { clearHeatmap, heatmapCrimeData } from "./heatmapDisplay.js";
 import { clearPolygon, displayPolygon } from "./displayPolygon.js";
-import { updateStats } from "./main.js";
+import { updateStats } from "./crimeStats.js";
 import {
     hideLoadingScreen,
     showLoadingScreen,

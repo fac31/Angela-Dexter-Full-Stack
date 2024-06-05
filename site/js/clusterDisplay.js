@@ -1,5 +1,5 @@
 import { addLayer, removeLayer, addBubble } from "./map.js";
-import { getMonthName } from "./main.js";
+import { getMonthName } from "./crimeStats.js";
 
 function crimeTypeToIcon(crimeType) {
     switch (crimeType) {
@@ -39,7 +39,7 @@ function crimeTypeToIcon(crimeType) {
     }
 }
 
-function formatCrimeType(crimeType) {
+export function formatCrimeType(crimeType) {
     switch (crimeType) {
         case "anti-social-behaviour":
             return "Anti-Social Behaviour";
