@@ -14,7 +14,7 @@ const PORT = 3000;
 
 const app = express();
 
-app.use(cors({ origin: ["https://js.api.here.com"] }));
+app.use(cors({ origin: ["https://js.api.here.com", "cdn.jsdelivr.net"] }));
 app.use(express.json({ limit: "1mb" }));
 app.use(express.static(path.join(__dirname, "site"), {}));
 
