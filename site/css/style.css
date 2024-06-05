@@ -67,6 +67,14 @@ h1 {
     flex-shrink: 0;
 }
 
+select {
+    font-family:"Roboto Slab", serif;
+}
+
+/* Style for the selected option */
+select option:checked {
+    font-style: italic;
+}
 .views {
     display: flex;
     justify-content: center;
@@ -142,10 +150,18 @@ main {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 30%;
     border-radius: 10px;
-    display: flex; /* Add flexbox */
-    flex-direction: column; /* Align children vertically */
-    justify-content: flex-start; /* Align content to the top */
-    margin-bottom: 10px; /* Adjusted margin */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+}
+
+.stats-title {
+    color: white;
+    font-size: 22px;
+    text-align: center;
+    margin-top: -15px; 
+    font-weight: bold;
 }
 
 .stats p {
@@ -163,9 +179,10 @@ main {
 }
 
 .stats-header img {
-    width: 50px; /* Adjust the width as needed */
-    height: 50px; /* Adjust the height as needed */
+    width: 50px;
+    height: 50px;
 }
+
 
 .stats ul {
     list-style: none;
@@ -178,42 +195,51 @@ main {
     font-size: 16px;
     margin-bottom: 5px;
     color: white;
-}
+} 
 
-/* Add this style for dynamically updated span elements */
 .stats ul li span {
     font-weight: bold;
 }
 .stats-header {
-    perspective: 500px; /* Adds perspective to the container for 3D effect */
+    perspective: 500px;
 }
 
 #statsIcon {
-    width: 50px; /* Adjust the width as needed */
-    height: auto; /* Maintain aspect ratio */
-    transition: transform 0.5s; /* Add a smooth transition effect */
+    width: 50px;
+    height: auto;
+    transition: transform 0.5s;
 }
 
 .stats-header:hover #statsIcon {
     transform: rotateY(
         180deg
-    ); /* Rotate the image by 180 degrees on the Y-axis */
+    );
+}
+
+.crime-stats-text {
+    color: white;
+    display: block;
+    margin-bottom: 30px;
+}
+
+li.crime-stat-item {
+    text-align: left;
 }
 
 #viewDefinitions {
-    padding: 10px 20px;
-    border: none;
-    background-color: #76abae;
-    color: black;
+    color: #808080;
+    text-decoration: underline;
     cursor: pointer;
-    border-radius: 4px;
-    font-family: "Roboto Slab", serif;
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 16px;
+    text-align: center;
+    font-style: italic;
 }
 
 #viewDefinitions:hover {
-    background-color: #eeeeee;
+    color: #a59e9e;
 }
-
 .map {
     background-color: #eaeaea;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -234,6 +260,13 @@ main {
 
 .area-filter {
     position: relative;
+}
+
+/* Style the placeholder text */
+input[type="text"]::placeholder {
+    color: #999;
+    font-style: italic;
+    font-family: "Roboto Slab", serif;
 }
 
 .suggestions {
@@ -297,23 +330,22 @@ main {
     font-size: 20px;
 }
 
-/* Custom scrollbar for WebKit browsers */
 .popup::-webkit-scrollbar {
-    width: 12px; /* Width of the scrollbar */
+    width: 12px;
 }
 
 .popup::-webkit-scrollbar-track {
-    background: #f1f1f1; /* Background of the scrollbar track */
-    border-radius: 10px; /* Rounded corners for the track */
+    background: #f1f1f1;
+    border-radius: 10px;
 }
 
 .popup::-webkit-scrollbar-thumb {
-    background: black; /* Color of the scrollbar thumb */
-    border-radius: 10px; /* Rounded corners for the thumb */
+    background: black;
+    border-radius: 10px;
 }
 
 .popup::-webkit-scrollbar-thumb:hover {
-    background: #555; /* Color of the scrollbar thumb when hovered */
+    background: #555;
 }
 
 .month-year {
@@ -433,7 +465,7 @@ main {
     .popup {
         width: 95%;
         padding: 15px;
-        max-height: 90vh; /* Adjust max-height for smaller screens */
+        max-height: 90vh;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
 
@@ -442,16 +474,16 @@ main {
     }
 
     .popup-content h2 {
-        font-size: 1.5em; /* Adjust heading size */
+        font-size: 1.5em;
     }
 
     .popup-content ul {
-        padding-left: 20px; /* Adjust padding for list items */
+        padding-left: 20px;
     }
 
     .popup-content li {
-        font-size: 1em; /* Ensure list items have readable font size */
-        line-height: 1.4; /* Increase line height for better readability */
+        font-size: 1em;
+        line-height: 1.4;
     }
 
     .bubble-container {

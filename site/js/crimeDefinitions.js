@@ -1,3 +1,8 @@
+document.getElementById('viewDefinitions').addEventListener('click', function(event) {
+    event.preventDefault(); // Prevent the default link behavior
+    showCrimeDefinitions();
+});
+
 export function showCrimeDefinitions() {
     // Create a popup container
     const popupContainer = document.createElement('div');

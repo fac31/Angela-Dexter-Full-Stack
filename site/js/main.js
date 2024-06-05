@@ -42,11 +42,27 @@ export function updateStats(data) {
         return;
     }
 
-    const monthName = getMonthName(month);
+    // const monthName = getMonthName(month);
 
+    // const totalCount = data.length;
+    // const totalCrimesText = document.createElement("div");
+    // totalCrimesText.textContent = `${totalCount} crimes occurred in ${monthName} ${year}.`;
+    // statsContainer.appendChild(totalCrimesText);
+
+    const monthName = getMonthName(month);
     const totalCount = data.length;
-    const totalCrimesText = document.createElement("div");
+
+    // Create a span element for the dynamic text
+    const totalCrimesText = document.createElement("span");
     totalCrimesText.textContent = `${totalCount} crimes occurred in ${monthName} ${year}.`;
+
+    // Wrap the number of crimes and the month year in <strong> tags
+    totalCrimesText.innerHTML = totalCrimesText.innerHTML.replace(/(\d+) crimes occurred in (\w+ \d+)/, '<strong>$1</strong> crimes occurred in <strong>$2</strong>');
+
+    // Apply a class to the span for easier CSS targeting
+    totalCrimesText.classList.add("crime-stats-text");
+
+    // Append the span to the stats container
     statsContainer.appendChild(totalCrimesText);
 
     const crimeCountsByCategory = {};
@@ -62,7 +78,16 @@ export function updateStats(data) {
     for (const category in crimeCountsByCategory) {
         const count = crimeCountsByCategory[category];
         const statElement = document.createElement("li");
-        statElement.textContent = `${category}: ${count}`;
+        // statElement.textContent = `${category}: ${count}`;
+        // statsContainer.appendChild(statElement);
+
+        // Wrap the category name and count in <strong> tags
+        statElement.innerHTML = `${category}: ${count}`;
+
+        // Apply a class to the list item for easier CSS targeting
+        statElement.classList.add("crime-stat-item");
+
+        // Append the list item to the stats container
         statsContainer.appendChild(statElement);
     }
 }
