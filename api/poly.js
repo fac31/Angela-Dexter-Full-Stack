@@ -25,7 +25,13 @@ const getPolyDataForCrime = (feature) => {
         });
         // in both cases we only take the first element since its the outer-ring
         // any other elements in the array are inner-rings that subtract from the outer-rind
-        return geometry.coordinates[0].map(([lng, lat]) => [r3(lat), r3(lng)]);
+        return {
+            type: "poly",
+            data: geometry.coordinates[0].map(([lng, lat]) => [
+                r3(lat),
+                r3(lng),
+            ]),
+        };
     } else if (geometry.type === "MultiPolygon") {
         simplify(geometry, {
             mutate: true,
@@ -35,14 +41,20 @@ const getPolyDataForCrime = (feature) => {
         // since its multi-polygon it *could* have multiple polygons but in our case
         // of just different locations i cant think of a place that would have multiple
         // polygons, so we just take the first
-        return geometry.coordinates[0][0].map(([lng, lat]) => [
-            r3(lat),
-            r3(lng),
-        ]);
+        return {
+            type: "poly",
+            data: geometry.coordinates[0][0].map(([lng, lat]) => [
+                r3(lat),
+                r3(lng),
+            ]),
+        };
     } else {
         // if its anything other than a polygon we just return the center
         // handling all the different cases like lines and multi-lines is too hard for the time being
-        return [r3(feature.center[1]), r3(feature.center[0])];
+        return {
+            type: "center",
+            data: [r3(feature.center[1]), r3(feature.center[0])],
+        };
     }
 };
 

@@ -50,7 +50,7 @@ router.get("/last-updated", async (req, res) => {
 router.post("/location", async (req, res) => {
     // console.log(req.body);
     // console.log(
-    //     `${CRIME_DATA_URL}/crimes-street/${req.body.crime_type}?` +
+    //     `${CRIME_DATA_URL}/crimes-street/all-crime?` +
     //         new URLSearchParams({
     //             poly: formatPoly(req.body.polygon),
     //             date: req.body.date,
@@ -58,16 +58,29 @@ router.post("/location", async (req, res) => {
     //             // lng: req.body.lng,
     //         })
     // );
+    // console.log(req.body.polygon);
+
     try {
-        const crimeData = await fetch(
-            `${CRIME_DATA_URL}/crimes-street/all-crime?` +
-                new URLSearchParams({
-                    poly: formatPoly(req.body.polygon),
-                    date: req.body.date,
-                    // lat: req.body.lat,
-                    // lng: req.body.lng,
-                })
-        );
+        let crimeData;
+
+        if (req.body.polygon.type === "poly") {
+            crimeData = await fetch(
+                `${CRIME_DATA_URL}/crimes-street/all-crime?` +
+                    new URLSearchParams({
+                        poly: formatPoly(req.body.polygon.data),
+                        date: req.body.date,
+                    })
+            );
+        } else {
+            crimeData = await fetch(
+                `${CRIME_DATA_URL}/crimes-street/all-crime?` +
+                    new URLSearchParams({
+                        date: req.body.date,
+                        lat: req.body.polygon.data[0],
+                        lng: req.body.polygon.data[1],
+                    })
+            );
+        }
 
         if (crimeData.status !== 200) {
             res.status(503).send();
